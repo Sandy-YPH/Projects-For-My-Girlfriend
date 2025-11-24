@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Untukmu, Cantik</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #000;
+      overflow: hidden;
+      height: 100vh;
+      font-family: 'Montserrat', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      touch-action: manipulation;
+    }
+
+    #scene {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      max-width: 500px;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+
+    /* Langit dengan gradien yang lebih menarik */
+    #sky {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom, #0a0a2a, #1a1a4a, #2a2a6a);
+      z-index: 1;
+    }
+
+    /* Matahari dengan efek glow yang lebih halus */
+    #sun {
+      position: absolute;
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #FFD700, #FFA500, #FF8C00);
+      bottom: 15%;
+      left: 10%;
+      box-shadow: 
+        0 0 30px #FF8C00,
+        0 0 60px rgba(255, 140, 0, 0.5),
+        0 0 90px rgba(255, 140, 0, 0.3);
+      z-index: 5;
+      opacity: 0;
+    }
+
+    /* Laut dengan efek gelombang halus */
+    #ocean {
+      position: absolute;
+      bottom: 25%;
+      width: 100%;
+      height: 50px;
+      background: 
+        linear-gradient(to top, rgba(15, 52, 96, 0.8), transparent 70%),
+        repeating-linear-gradient(
+          to bottom,
+          transparent,
+          transparent 5px,
+          rgba(255, 255, 255, 0.1) 5px,
+          rgba(255, 255, 255, 0.1) 7px
+        );
+      z-index: 4;
+      opacity: 0;
+    }
+
+    /* Tanah dengan tekstur */
+    #ground {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 25%;
+      background: 
+        linear-gradient(to top, #3e2723, #5d4037),
+        repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 10px,
+          rgba(0, 0, 0, 0.1) 10px,
+          rgba(0, 0, 0, 0.1) 12px
+        );
+      z-index: 6;
+    }
+
+    /* Rumput dengan detail lebih */
+    #grass {
+      position: absolute;
+      bottom: 25%;
+      width: 100%;
+      height: 12px;
+      background: 
+        linear-gradient(to top, #1b5e20, #2e7d32, #4caf50),
+        repeating-linear-gradient(
+          -45deg,
+          transparent,
+          transparent 5px,
+          rgba(0, 0, 0, 0.1) 5px,
+          rgba(0, 0, 0, 0.1) 7px
+        );
+      z-index: 7;
+      box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Mawar container dengan bayangan */
+    #rose-container {
+      position: absolute;
+      bottom: 26%;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      opacity: 0;
+      width: 140px;
+      height: 180px;
+      filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.3));
+    }
+
+    /* Teks tanpa container */
+    .message {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 400;
+      text-align: center;
+      line-height: 1.5;
+      color: #f9f5eb;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+      pointer-events: none;
+      opacity: 0;
+      width: 90%;
+      z-index: 12;
+    }
+
+    #msg1 { 
+      font-size: 1.5rem; 
+      font-weight: 500;
+      bottom: 20%;
+    }
+    
+    #msg2 { 
+      font-size: 1rem; 
+      font-weight: 400;
+      bottom: 18%;
+    }
+    
+    #msg3 {
+      font-size: 1.1rem;
+      font-weight: 500;
+      bottom: 16%;
+    }
+
+    /* Bintang-bintang di langit */
+    .star {
+      position: absolute;
+      background-color: white;
+      border-radius: 50%;
+      z-index: 2;
+      opacity: 0;
+    }
+
+    /* Media query untuk perangkat yang lebih besar */
+    @media (min-width: 768px) {
+      #scene {
+        max-width: 100%;
+      }
+      
+      #sun {
+        width: 100px;
+        height: 100px;
+        bottom: 20%;
+        box-shadow: 
+          0 0 50px #FF8C00,
+          0 0 100px rgba(255, 140, 0, 0.5),
+          0 0 150px rgba(255, 140, 0, 0.3);
+      }
+      
+      #ocean {
+        bottom: 20%;
+        height: 70px;
+      }
+      
+      #ground {
+        height: 20%;
+      }
+      
+      #grass {
+        bottom: 20%;
+        height: 15px;
+      }
+      
+      #rose-container {
+        bottom: 21%;
+        width: 180px;
+        height: 230px;
+      }
+      
+      .message {
+        width: 80%;
+        max-width: 500px;
+      }
+      
+      #msg1 { 
+        font-size: 1.8rem; 
+        bottom: 25%;
+      }
+      
+      #msg2 { 
+        font-size: 1.2rem; 
+        bottom: 22%;
+      }
+      
+      #msg3 { 
+        font-size: 1.3rem; 
+        bottom: 19%;
+      }
+    }
+
+    /* Tombol restart untuk pengalaman berulang */
+    #restart-btn {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      color: white;
+      font-size: 1.2rem;
+      cursor: pointer;
+      z-index: 20;
+      opacity: 0;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #restart-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+<body>
+  <div id="scene">
+    <!-- Langit dengan bintang -->
+    <div id="sky"></div>
+    
+    <!-- Laut -->
+    <div id="ocean"></div>
+    
+    <!-- Tanah -->
+    <div id="ground"></div>
+    
+    <!-- Rumput -->
+    <div id="grass"></div>
+    
+    <!-- Matahari -->
+    <div id="sun"></div>
+    
+    <!-- Mawar REALISTIS dengan 3 tahap mekar -->
+    <div id="rose-container">
+      <svg width="100%" height="100%" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+        <!-- Batang -->
+        <line x1="100" y1="260" x2="100" y2="110" stroke="#2e7d32" stroke-width="6" stroke-linecap="round"/>
+        <!-- Duri -->
+        <polygon points="90,200 80,190 100,195" fill="#1b5e20"/>
+        <polygon points="110,170 120,160 100,165" fill="#1b5e20"/>
+        <polygon points="92,140 82,130 100,135" fill="#1b5e20"/>
+        <!-- Daun -->
+        <path d="M65,190 Q45,180 50,160 Q60,170 65,190" fill="#388e3c"/>
+        <path d="M135,160 Q155,150 150,130 Q140,140 135,160" fill="#388e3c"/>
+        
+        <!-- TAHAP 1: KUNCUP RAPAT (muncul awal) -->
+        <g id="stage1">
+          <path d="M100,100 C108,90 115,95 112,105 C108,115 100,118 100,110 Z" fill="#5D001E"/>
+          <path d="M100,100 C92,90 85,95 88,105 C92,115 100,118 100,110 Z" fill="#7A1A36"/>
+          <path d="M100,102 C110,92 118,98 114,110 C110,122 100,125 100,112 Z" fill="#8B0000"/>
+          <path d="M100,102 C90,92 82,98 86,110 C90,122 100,125 100,112 Z" fill="#A52A2A"/>
+        </g>
+        
+        <!-- TAHAP 2: MEKAR AWAL (muncul saat teks 2) -->
+        <g id="stage2" opacity="0">
+          <path d="M100,95 C120,80 130,90 125,105 C120,120 100,125 100,115 Z" fill="#B22222"/>
+          <path d="M100,95 C80,80 70,90 75,105 C80,120 100,125 100,115 Z" fill="#C23B3B"/>
+          <path d="M100,98 C125,82 138,95 130,112 C122,129 100,132 100,118 Z" fill="#CD5C5C"/>
+          <path d="M100,98 C75,82 62,95 70,112 C78,129 100,132 100,118 Z" fill="#DC6B6B"/>
+        </g>
+        
+        <!-- TAHAP 3: MEKAR PENUH (muncul saat teks 3) -->
+        <g id="stage3" opacity="0">
+          <path d="M100,90 C130,70 145,85 135,105 C125,125 100,130 100,120 Z" fill="#E9967A"/>
+          <path d="M100,90 C70,70 55,85 65,105 C75,125 100,130 100,120 Z" fill="#F0A08A"/>
+          <path d="M100,92 C135,72 152,90 140,112 C128,134 100,136 100,122 Z" fill="#FFB6C1"/>
+          <path d="M100,92 C65,72 48,90 60,112 C72,134 100,136 100,122 Z" fill="#FFC0CB"/>
+          <path d="M100,95 C140,75 160,95 145,118 C130,141 100,142 100,125 Z" fill="#FFD1DC"/>
+          <path d="M100,95 C60,75 40,95 55,118 C70,141 100,142 100,125 Z" fill="#FFE4E9"/>
+          <!-- Embun -->
+          <circle cx="120" cy="80" r="2" fill="white" opacity="0.8"/>
+          <circle cx="80" cy="85" r="1.8" fill="white" opacity="0.7"/>
+        </g>
+      </svg>
+    </div>
+
+    <!-- Pesan langsung di scene -->
+    <div class="message" id="msg1">Good morning, cantik</div>
+    <div class="message" id="msg2">Jangan lupa tersenyum hari ini, karena senyummu memperindah dunia.</div>
+    <div class="message" id="msg3">I love you so much, sayang. Ini mawar digital untukmu. Semoga harimu luar biasa.</div>
+
+    <!-- Tombol restart -->
+    <button id="restart-btn">⟳</button>
+  </div>
+
+  <script>
+    // Fungsi untuk membuat bintang
+    function createStars() {
+      const sky = document.getElementById('sky');
+      const starCount = window.innerWidth < 768 ? 40 : 80;
+      
+      for (let i = 0; i < starCount; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        
+        // Ukuran acak untuk bintang
+        const size = Math.random() * 2 + 1;
+        star.style.width = `${size}px`;
+        star.style.height = `${size}px`;
+        
+        // Posisi acak
+        star.style.left = `${Math.random() * 100}%`;
+        star.style.top = `${Math.random() * 70}%`;
+        
+        // Opasitas acak
+        star.style.opacity = Math.random() * 0.7 + 0.3;
+        
+        sky.appendChild(star);
+      }
+    }
+
+    // Fungsi untuk memulai animasi
+    function startAnimation() {
+      const tl = gsap.timeline();
+
+      // Animasi bintang berkedip
+      tl.to(".star", {
+        opacity: () => Math.random() * 0.5 + 0.3,
+        duration: 1,
+        repeat: -1,
+        yoyo: true,
+        stagger: {
+          amount: 2,
+          from: "random"
+        }
+      }, 0);
+
+      // Matahari terbit
+      tl.to("#sun", {
+        opacity: 1,
+        y: window.innerWidth < 768 ? -120 : -180,
+        x: window.innerWidth < 768 ? 60 : 90,
+        duration: 4.5,
+        ease: "power2.out"
+      }, 1);
+
+      // Langit berubah warna
+      tl.to("#sky", {
+        background: "linear-gradient(to bottom, #ff7e5f, #feb47b, #86a8e7, #91eae4)",
+        duration: 5,
+        ease: "power2.out"
+      }, 1);
+
+      // Laut muncul
+      tl.to("#ocean", {
+        opacity: 1,
+        duration: 2,
+        ease: "power1.out"
+      }, 2);
+
+      // Mawar tumbuh (kuncup rapat)
+      tl.fromTo("#rose-container", {
+        y: 80,
+        opacity: 0,
+        scale: 0.8
+      }, {
+        y: 0,
+        opacity: 1,
+        scale: 1,
+        duration: 2,
+        ease: "elastic.out(1, 0.6)"
+      }, 3.5);
+
+      // Pesan 1 muncul → mawar tetap kuncup
+      tl.fromTo("#msg1", {
+        y: 10,
+        opacity: 0
+      }, {
+        y: 0,
+        opacity: 1,
+        duration: 1.2,
+        ease: "power3.out"
+      }, 4.5);
+
+      tl.to("#msg1", {
+        opacity: 0,
+        duration: 1,
+        ease: "power2.in"
+      }, 7.5);
+
+      // SAAT TEKS 2 MUNCUL → MEKAR TAHAP 2
+      tl.fromTo("#stage2", {
+        opacity: 0,
+        scaleY: 0.1,
+        transformOrigin: "bottom center"
+      }, {
+        opacity: 1,
+        scaleY: 1,
+        duration: 1.5,
+        stagger: 0.07,
+        ease: "elastic.out(1, 0.5)"
+      }, 8);
+
+      tl.fromTo("#msg2", {
+        y: 10,
+        opacity: 0
+      }, {
+        y: 0,
+        opacity: 1,
+        duration: 1.2,
+        ease: "power3.out"
+      }, 8.3);
+
+      tl.to("#msg2", {
+        opacity: 0,
+        duration: 1,
+        ease: "power2.in"
+      }, 12);
+
+      // SAAT TEKS 3 MUNCUL → MEKAR TAHAP 3 (PENUH)
+      tl.fromTo("#stage3", {
+        opacity: 0,
+        scaleY: 0.1,
+        transformOrigin: "bottom center"
+      }, {
+        opacity: 1,
+        scaleY: 1,
+        duration: 1.8,
+        stagger: 0.06,
+        ease: "elastic.out(1, 0.6)"
+      }, 12.5);
+
+      tl.fromTo("#msg3", {
+        y: 10,
+        opacity: 0
+      }, {
+        y: 0,
+        opacity: 1,
+        duration: 1.5,
+        ease: "power3.out"
+      }, 13);
+
+      // Teks terakhir hilang setelah 3 detik
+      tl.to("#msg3", {
+        opacity: 0,
+        duration: 1.2,
+        ease: "power2.in"
+      }, 16);
+
+      // Tombol restart muncul di akhir
+      tl.to("#restart-btn", {
+        opacity: 1,
+        duration: 0.8,
+        ease: "power2.out"
+      }, 16.5);
+    }
+
+    // Inisialisasi
+    document.addEventListener('DOMContentLoaded', () => {
+      createStars();
+      startAnimation();
+      
+      // Event listener untuk tombol restart
+      document.getElementById('restart-btn').addEventListener('click', () => {
+        // Reset animasi
+        gsap.killTweensOf("*");
+        
+        // Reset elemen ke keadaan awal
+        gsap.set(["#sun", "#ocean", "#rose-container", ".message", "#stage2", "#stage3", "#restart-btn"], {
+          opacity: 0,
+          y: 0,
+          x: 0,
+          scale: 1
+        });
+        
+        gsap.set("#sky", {
+          background: "linear-gradient(to bottom, #0a0a2a, #1a1a4a, #2a2a6a)"
+        });
+        
+        gsap.set("#stage1", {
+          opacity: 1
+        });
+        
+        // Mulai animasi lagi
+        startAnimation();
+      });
+    });
+  </script>
+</body>
+</html>

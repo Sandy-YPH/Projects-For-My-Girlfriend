@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maafin Aku Ya :(</title>
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{
+            height:100vh;
+            font-family:'Segoe UI',Helvetica,Arial,sans-serif;
+            background:#0f0c29;
+            overflow:hidden;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+        }
+        /* background bokeh */
+        .bg-bokeh{
+            position:absolute;
+            width:100%;height:100%;
+            overflow:hidden;
+            z-index:0;
+        }
+        .bg-bokeh span{
+            position:absolute;
+            border-radius:50%;
+            background:rgba(255,255,255,.15);
+            animation:floatBokeh 15s infinite;
+        }
+        @keyframes floatBokeh{
+            0%,100%{transform:translateY(0) scale(1);}
+            50%{transform:translateY(-40px) scale(1.3);}
+        }
+        /* slide */
+        .slide{
+            position:absolute;
+            width:90%;max-width:700px;
+            z-index:2;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            justify-content:center;
+            text-align:center;
+            color:#fff;
+            opacity:0;
+            transform:translateY(30px);
+            transition:all .6s ease;
+        }
+        .slide.active{opacity:1;transform:translateY(0);}
+        .slide h1{
+            font-size:2.8em;
+            margin-bottom:20px;
+            text-shadow:0 2px 10px rgba(0,0,0,.4);
+            animation:float 3s ease-in-out infinite;
+        }
+        .slide p{
+            font-size:1.3em;
+            line-height:1.6;
+            max-width:600px;
+            text-shadow:0 1px 4px rgba(0,0,0,.3);
+            overflow:hidden;
+            white-space:pre-line;
+        }
+        /* animasi ketik */
+        .typing{
+            width:0;
+            animation:type 2s steps(40,end) forwards;
+        }
+        @keyframes type{to{width:100%}}
+        @keyframes float{
+            0%,100%{transform:translateY(0);}
+            50%{transform:translateY(-12px);}
+        }
+        .heart{color:#ff5c8a;display:inline-block;animation:beat 1.2s infinite;}
+        @keyframes beat{0%,100%{transform:scale(1);}50%{transform:scale(1.15);}}
+        /* nav */
+        .nav{
+            position:fixed;
+            bottom:30px;left:50%;
+            transform:translateX(-50%);
+            display:flex;gap:15px;
+            z-index:10;
+        }
+        .nav button{
+            border:none;
+            padding:10px 25px;
+            border-radius:25px;
+            font-size:16px;
+            cursor:pointer;
+            background:rgba(255,255,255,.2);
+            color:#fff;
+            backdrop-filter:blur(10px);
+            transition:all .3s ease;
+        }
+        .nav button:hover:not(:disabled){background:rgba(255,255,255,.35);transform:scale(1.05);}
+        .nav button:disabled{opacity:.4;cursor:not-allowed;}
+        /* tombol ke versi2 */
+        .btn-versi2{
+            display:inline-block;
+            margin-top:25px;
+            padding:14px 32px;
+            background:rgba(255,255,255,.25);
+            color:#fff;
+            font-size:1.1em;
+            border:2px solid rgba(255,255,255,.6);
+            border-radius:30px;
+            text-decoration:none;
+            backdrop-filter:blur(10px);
+            transition:all .3s ease;
+        }
+        .btn-versi2:hover{background:rgba(255,255,255,.4);transform:scale(1.05);}
+        /* mobile */
+        @media(max-width:600px){
+            .slide h1{font-size:2.2em;}
+            .slide p{font-size:1.1em;}
+        }
+    </style>
+</head>
+<body>
+    <!-- background bokeh -->
+    <div class="bg-bokeh" id="bokeh"></div>
+
+    <!-- Slides -->
+    <div class="slide active">
+        <h1>Maafin aku ya <span class="heart">:(</span></h1>
+    </div>
+
+    <div class="slide">
+        <h1>Aku janji gaakan ngulangin lagi</h1>
+        <p class="typing">Aku janji gaakan ngulangin lagi kesalahan bodoh aku sayang, mau ya maafin aku?</p>
+    </div>
+
+    <div class="slide">
+        <h1>I love you and I need you <span class="heart">:(</span></h1>
+        <p class="typing">Sayang jangan ngacangin aku lama-lama ya, aku butuh kamu, aku cinta kamu, aku nyesel udah buat kamu sedih, mau ya maafin aku?</p>
+    </div>
+
+    <div class="slide">
+        <h1>I'll try to be better for you <span class="heart">:(</span></h1>
+        <p class="typing">Aku janji aku akan menjadi lebih baik untuk kamu, aku gaakan bikin kamu kesel lagi, mau ya maafin aku?</p>
+    </div>
+
+    <div class="slide">
+        <h1>I realize my mistake <span class="heart">:(</span></h1>
+        <p class="typing">Aku minta maaf bukan hanya untuk "minta maaf" aja, aku bener-bener ngerti apa yang aku lakuin nyakitin kamu, dan aku sangat menyesal. Mau ya maafin aku?</p>
+    </div>
+
+    <div class="slide">
+        <h1>I want to fix my mistake <span class="heart">:(</span></h1>
+        <p class="typing">Aku siap ngebuktiin ke kamu kalau aku bener-bener menyesal dan bukan cuma kata-kata aja. Mau ya maafin aku?</p>
+    </div>
+
+    <div class="slide">
+        <h1>I miss you <span class="heart">:(</span></h1>
+        <p class="typing">Aku kangen kamu, aku kangen chattan sama kamu lebih dari 1-2 kata aja, aku kangen ketawa bareng sama kamu, aku kangen kamu. Mau ya maafin aku?</p>
+    </div>
+
+    <div class="slide">
+        <h1>I don't want a life without you <span class="heart">:(</span></h1>
+        <p class="typing">Aku bisa hidup tanpa banyak hal, tapi gabisa kalau gaada kamunya.</p>
+    </div>
+
+    <div class="slide">
+        <h1>Please forgive me <span class="heart">💔</span></h1>
+        <p class="typing">Aku sayang kamu... lebih dari apapun. Maafin aku ya sayang?</p>
+    </div>
+
+    <!-- SLIDE KE-10 : PENAWARAN KE VERSI-2 -->
+    <div class="slide">
+        <h1>Aku juga buatin versi lain untuk kamu,
+            <br>siapa tau kamu lebih suka yang itu temanya,
+            <br>tapi pesannya sama&nbsp;<span class="heart">❤️</span>
+        </h1>
+        <a href="versi2.html" class="btn-versi2">Klik aku untuk ke versi ke 2</a>
+    </div>
+
+    <!-- Navigasi -->
+    <div class="nav">
+        <button id="prev" onclick="move(-1)">Sebelumnya</button>
+        <button id="next" onclick="move(1)" disabled>Selanjutnya</button>
+    </div>
+
+    <script>
+        const slides=document.querySelectorAll('.slide');
+        let idx=0;
+        let canNext=false;
+
+        /* buat bubble bokeh */
+        function createBokeh(){
+            const bokeh=document.getElementById('bokeh');
+            for(let i=0;i<25;i++){
+                const span=document.createElement('span');
+                const size=Math.random()*70+20;
+                span.style.width=size+'px';
+                span.style.height=size+'px';
+                span.style.left=Math.random()*100+'%';
+                span.style.top=Math.random()*100+'%';
+                span.style.animationDelay=Math.random()*15+'s';
+                span.style.animationDuration=(15+Math.random()*10)+'s';
+                bokeh.appendChild(span);
+            }
+        }
+        createBokeh();
+
+        /* logika slide */
+        function show(index){
+            slides.forEach((s,i)=>{
+                s.classList.toggle('active',i===index);
+                /* restart animasi ketik */
+                const p=s.querySelector('p');
+                if(p){
+                    p.style.animation='none';
+                    void p.offsetWidth;
+                    p.style.animation='type 2s steps(40,end) forwards';
+                }
+            });
+            document.getElementById('prev').disabled=index===0;
+            // next baru aktif setelah 3 detik
+            canNext=false;
+            document.getElementById('next').disabled=true;
+            setTimeout(()=>{canNext=true;document.getElementById('next').disabled=index===slides.length-1;},3000);
+        }
+        function move(dir){
+            const next=idx+dir;
+            if(next>=0&&next<slides.length){
+                idx=next;
+                show(idx);
+            }
+        }
+        /* keyboard & swipe */
+        document.addEventListener('keydown',e=>{
+            if(e.key==='ArrowRight'&&canNext&&idx<slides.length-1)move(1);
+            if(e.key==='ArrowLeft'&&idx>0)move(-1);
+        });
+        let tx0,tx1;
+        document.addEventListener('touchstart',e=>tx0=e.changedTouches[0].screenX);
+        document.addEventListener('touchend',e=>{
+            tx1=e.changedTouches[0].screenX;
+            if(tx0>tx1+50&&canNext&&idx<slides.length-1)move(1);
+            if(tx0<tx1-50&&idx>0)move(-1);
+        });
+        /* init */
+        show(0);
+    </script>
+</body>
+</html>
+

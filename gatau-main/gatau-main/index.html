@@ -1,0 +1,1776 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maaf Sayang</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Poppins', sans-serif;
+            background: #000;
+        }
+        
+        #app {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+        
+        .page {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: none;
+            opacity: 0;
+        }
+        
+        .page.active {
+            display: block;
+            opacity: 1;
+        }
+        
+        .three-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* UI Container yang Responsif */
+        .ui-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px;
+            pointer-events: auto;
+            z-index: 100;
+        }
+        
+        .ui-top {
+            flex: 1;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 5vh;
+            pointer-events: auto;
+        }
+        
+        .ui-bottom {
+            flex: 1;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 8vh;
+            pointer-events: auto;
+        }
+        
+        .text-container {
+            text-align: center;
+            max-width: 90vw;
+            width: 100%;
+        }
+        
+        .main-text {
+            font-family: 'Playfair Display', serif;
+            color: #ffffff;
+            text-shadow: 3px 3px 25px rgba(0,0,0,0.9);
+            opacity: 0;
+            transform: translateY(30px);
+            line-height: 1.4;
+            font-weight: 500;
+        }
+        
+        /* Ukuran font yang lebih aesthetic */
+        .text-xl-responsive {
+            font-size: clamp(1.8rem, 5vw, 3rem);
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+        
+        .text-lg-responsive {
+            font-size: clamp(1.4rem, 4vw, 2.4rem);
+            font-weight: 500;
+            letter-spacing: -0.01em;
+        }
+        
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .cta-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: clamp(14px, 2.5vh, 20px) clamp(30px, 5vw, 50px);
+            font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+            font-weight: 500;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+            opacity: 0;
+            transform: translateY(30px);
+            white-space: nowrap;
+            letter-spacing: 0.5px;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 20px 50px rgba(102, 126, 234, 0.6);
+        }
+        
+        .choice-buttons {
+            display: flex;
+            gap: clamp(20px, 4vw, 40px);
+            opacity: 0;
+            transform: translateY(30px);
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .choice-btn {
+            padding: clamp(14px, 2.5vh, 18px) clamp(35px, 6vw, 60px);
+            font-size: clamp(1.1rem, 3vw, 1.5rem);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            white-space: nowrap;
+            letter-spacing: 0.5px;
+        }
+        
+        .yes-btn {
+            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+            color: #2d3748;
+        }
+        
+        .no-btn {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: #2d3748;
+        }
+        
+        .choice-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+        }
+        
+        .digital-paper {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            padding: clamp(40px, 6vh, 60px) clamp(30px, 5vw, 50px);
+            border-radius: 25px;
+            max-width: min(90vw, 800px);
+            max-height: min(80vh, 700px);
+            width: 100%;
+            text-align: center;
+            z-index: 9999;
+            opacity: 0;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.3);
+            overflow-y: auto;
+            pointer-events: auto;
+        }
+        
+        .paper-bright {
+            background: rgba(255, 255, 255, 0.97);
+            color: #2d3748;
+            box-shadow: 0 30px 60px rgba(102, 126, 234, 0.4);
+        }
+        
+        .paper-dark {
+            background: rgba(26, 32, 44, 0.97);
+            color: #e2e8f1;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+        }
+        
+        .paper-text {
+            font-size: clamp(1rem, 2.2vw, 1.3rem);
+            line-height: 1.8;
+            margin-bottom: clamp(25px, 5vh, 35px);
+            font-weight: 400;
+        }
+        
+        .paper-button {
+            padding: clamp(12px, 2.5vh, 15px) clamp(30px, 5vw, 40px);
+            border: none;
+            border-radius: 30px;
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Loading Screen dengan Font Bagus */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            flex-direction: column;
+            transition: opacity 0.5s ease-out;
+        }
+        
+        .loading-content {
+            text-align: center;
+            color: white;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        .loading-text {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+            opacity: 0.9;
+            font-weight: 500;
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .loading-subtext {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            font-weight: 300;
+        }
+        
+        .loading-progress {
+            width: 150px;
+            height: 3px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 2px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+        
+        .loading-bar {
+            height: 100%;
+            background: white;
+            width: 0%;
+            transition: width 0.2s ease-out;
+            border-radius: 2px;
+        }
+        
+        /* Langit Cerah untuk Scene Awal */
+        .sky-gradient {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, 
+                #87CEEB 0%,      /* Sky blue */
+                #98D8E8 30%,     /* Light blue */
+                #B0E0E6 60%,     /* Powder blue */
+                #E0F6FF 100%     /* Very light blue */
+            );
+            z-index: -1;
+        }
+        
+        .clouds {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.6;
+        }
+        
+        .cloud {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50px;
+            animation: float 20s ease-in-out infinite;
+        }
+        
+        .cloud:before {
+            content: '';
+            position: absolute;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50px;
+        }
+        
+        .cloud:after {
+            content: '';
+            position: absolute;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50px;
+        }
+        
+        .cloud1 {
+            width: 100px;
+            height: 40px;
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+        
+        .cloud1:before {
+            width: 50px;
+            height: 50px;
+            top: -25px;
+            left: 10px;
+        }
+        
+        .cloud1:after {
+            width: 60px;
+            height: 40px;
+            top: -15px;
+            right: 10px;
+        }
+        
+        .cloud2 {
+            width: 80px;
+            height: 30px;
+            top: 10%;
+            right: 20%;
+            animation-delay: -5s;
+        }
+        
+        .cloud2:before {
+            width: 40px;
+            height: 40px;
+            top: -20px;
+            left: 15px;
+        }
+        
+        .cloud2:after {
+            width: 50px;
+            height: 30px;
+            top: -10px;
+            right: 15px;
+        }
+        
+        .cloud3 {
+            width: 120px;
+            height: 35px;
+            top: 15%;
+            left: 60%;
+            animation-delay: -10s;
+        }
+        
+        .cloud3:before {
+            width: 60px;
+            height: 45px;
+            top: -22px;
+            left: 20px;
+        }
+        
+        .cloud3:after {
+            width: 70px;
+            height: 35px;
+            top: -12px;
+            right: 20px;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateX(0px) translateY(0px); }
+            25% { transform: translateX(10px) translateY(-5px); }
+            50% { transform: translateX(-5px) translateY(5px); }
+            75% { transform: translateX(15px) translateY(-3px); }
+        }
+        
+        /* Mobile Optimizations */
+        @media (max-width: 768px) {
+            .ui-container {
+                padding: 15px;
+            }
+            
+            .ui-top {
+                padding-top: 3vh;
+            }
+            
+            .ui-bottom {
+                padding-bottom: 5vh;
+            }
+            
+            .choice-buttons {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .choice-btn {
+                width: 100%;
+                max-width: 280px;
+            }
+            
+            .loading-spinner {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .loading-text {
+                font-size: 1.3rem;
+            }
+            
+            .cloud1, .cloud2, .cloud3 {
+                transform: scale(0.8);
+            }
+        }
+        
+        @media (max-height: 600px) {
+            .ui-top {
+                padding-top: 2vh;
+            }
+            
+            .ui-bottom {
+                padding-bottom: 3vh;
+            }
+        }
+        
+        /* Animasi transisi */
+        .fade-enter-active, .fade-leave-active {
+            transition: opacity 0.5s;
+        }
+        .fade-enter-from, .fade-leave-to {
+            opacity: 0;
+        }
+        
+        /* Utility untuk menyembunyikan loading */
+        .loading-hidden {
+            opacity: 0 !important;
+            pointer-events: none;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen dengan Font Bagus -->
+    <div class="loading-screen" id="loader">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Memuat Cerita 3D...</div>
+            <div class="loading-subtext">Sedang mempersiapkan moment spesial untukmu</div>
+            <div class="loading-progress">
+                <div class="loading-bar" id="loading-bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Langit Cerah untuk Scene Awal -->
+    <div class="sky-gradient" id="sky-gradient"></div>
+    <div class="clouds" id="clouds">
+        <div class="cloud cloud1"></div>
+        <div class="cloud cloud2"></div>
+        <div class="cloud cloud3"></div>
+    </div>
+
+    <div id="app">
+        <!-- Page 1: Initial Scene dengan Langit Cerah -->
+        <div class="page active" id="page1">
+            <div id="three-canvas-1" class="three-canvas"></div>
+            <div class="ui-container">
+                <div class="ui-top">
+                    <div class="text-container">
+                        <h1 class="main-text text-xl-responsive">Halo sayanggg, gimana kabar kamu?</h1>
+                    </div>
+                </div>
+                <div class="ui-bottom">
+                    <div class="button-group">
+                        <button class="cta-button" id="next-to-2">Klik aku yaaa!</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page 2: Walking Scene -->
+        <div class="page" id="page2">
+            <div id="three-canvas-2" class="three-canvas"></div>
+            <div class="ui-container">
+                <div class="ui-top">
+                    <div class="text-container">
+                        <p class="main-text text-lg-responsive">Aku tau aku salah, aku nyakitin kamu, aku udah ngebuat kamu merasa terkekang, maafin aku ya</p>
+                    </div>
+                </div>
+                <div class="ui-bottom">
+                    <div class="button-group">
+                        <button class="cta-button" id="next-to-3">Klik aku lagii</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page 3: Storm Scene -->
+        <div class="page" id="page3">
+            <div id="three-canvas-3" class="three-canvas"></div>
+            <div class="ui-container">
+                <div class="ui-top">
+                    <div class="text-container">
+                        <p class="main-text text-lg-responsive">Sayang mau kan maafin aku? Aku janji aku gaakan ngulangin lagi kesalahan aku</p>
+                    </div>
+                </div>
+                <div class="ui-bottom">
+                    <div class="choice-buttons">
+                        <button class="choice-btn yes-btn" id="yesBtn">Yes</button>
+                        <button class="choice-btn no-btn" id="noBtn">No</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page 4: Happy Ending Scene (Berpelukan) -->
+        <div class="page" id="page4">
+            <div id="three-canvas-4" class="three-canvas"></div>
+            <div class="ui-container">
+                <div class="ui-top">
+                    <div class="text-container">
+                        <h1 class="main-text text-xl-responsive">Terima kasih sayang ❤️</h1>
+                    </div>
+                </div>
+                <div class="ui-bottom">
+                    <div class="button-group">
+                        <button class="cta-button" id="restart-happy">Lihat lagi</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page 5: Sad Ending Scene (Jembatan Rubuh) -->
+        <div class="page" id="page5">
+            <div id="three-canvas-5" class="three-canvas"></div>
+            <div class="ui-container">
+                <div class="ui-top">
+                    <div class="text-container">
+                        <h1 class="main-text text-xl-responsive">Aku akan tetap mendoakan kamu 😢</h1>
+                    </div>
+                </div>
+                <div class="ui-bottom">
+                    <div class="button-group">
+                        <button class="cta-button" id="restart-sad">Lihat lagi</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Digital Paper - Yes -->
+        <div class="digital-paper paper-bright" id="yesPaper">
+            <p class="paper-text">
+                Makasih ya sayang udah mau maafin aku… aku bener-bener bersyukur banget. Aku tau aku banyak salah, banyak bikin kamu capek, tapi kamu masih mau ngertiin aku. Aku janji aku bakal belajar, bener-bener belajar biar nggak ngulangin hal yang sama lagi. Aku cuma pengen kamu tau, aku sayang banget sama kamu, dan aku nggak pernah anggap kesempatan ini hal kecil. Aku bakal jagain perasaan kamu lebih baik lagi ya sayang. Makasih udah tetap sabar sama aku, aku sayang kamu selalu.
+            </p>
+            <button class="paper-button" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;" id="happyEndingBtn">
+                Klik aku!
+            </button>
+        </div>
+
+        <!-- Digital Paper - No -->
+        <div class="digital-paper paper-dark" id="noPaper">
+            <p class="paper-text">
+                Aku ngerti kok sayang kalau kamu belum bisa maafin aku, atau mungkin emang kamu udah nggak mau. Aku nggak mau maksa kamu juga, karena aku tau aku yang bikin kamu ngerasa begini. Aku cuma mau bilang maaf ya… bener-bener maaf dari hati aku yang paling dalam. Aku nyesel udah bikin kamu capek dan ngerasa nggak tenang. Aku masih sayang sama kamu, tapi aku juga mau kamu bahagia, meskipun nanti bukan sama aku. Aku bakal terus doain kamu, selalu.
+            </p>
+            <button class="paper-button" style="background: #4a5568; color: white;" id="sadEndingBtn">
+                Klik aku :(
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // State management
+        const appState = {
+            currentPage: 1,
+            showYesPaper: false,
+            showNoPaper: false,
+            scenes: {},
+            loadingProgress: 0,
+            isLoading: true,
+            loadingTimeout: null,
+            isTransitioning: false,
+            isWalking: false,
+            walkingProgress: 0,
+            startTime: 0
+        };
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            initApp();
+        });
+
+        function initApp() {
+            startReliableLoading();
+            initScenesWithSky();
+            handleResize();
+            window.addEventListener('resize', handleResize);
+
+            // Event listeners for buttons
+            document.getElementById('next-to-2').addEventListener('click', () => nextPage(2));
+            document.getElementById('next-to-3').addEventListener('click', () => nextPage(3));
+            document.getElementById('yesBtn').addEventListener('click', handleYesClick);
+            document.getElementById('noBtn').addEventListener('click', handleNoClick);
+            document.getElementById('happyEndingBtn').addEventListener('click', () => happyEnding());
+            document.getElementById('sadEndingBtn').addEventListener('click', () => sadEnding());
+            document.getElementById('restart-happy').addEventListener('click', () => restartApp());
+            document.getElementById('restart-sad').addEventListener('click', () => restartApp());
+        }
+
+        function startReliableLoading() {
+            const loadingBar = document.getElementById('loading-bar');
+            const duration = 2500;
+            const startTime = Date.now();
+            
+            appState.loadingTimeout = setTimeout(() => {
+                console.log('Loading failsafe triggered');
+                completeLoading();
+            }, 8000);
+            
+            const updateProgress = () => {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min((elapsed / duration) * 100, 95);
+                
+                appState.loadingProgress = progress;
+                if (loadingBar) {
+                    loadingBar.style.width = progress + '%';
+                }
+                
+                if (progress < 95) {
+                    requestAnimationFrame(updateProgress);
+                }
+            };
+            
+            updateProgress();
+        }
+        
+        function completeLoading() {
+            if (!appState.isLoading) return;
+            
+            appState.isLoading = false;
+            
+            const loadingBar = document.getElementById('loading-bar');
+            if (loadingBar) {
+                loadingBar.style.width = '100%';
+            }
+            
+            const loader = document.getElementById('loader');
+            loader.classList.add('loading-hidden');
+            
+            setTimeout(() => {
+                loader.style.display = 'none';
+                animatePage1();
+            }, 500);
+        }
+        
+        function initScenesWithSky() {
+            try {
+                initScene1WithSky();
+                initScene2WithSky();
+                initScene3WithSky();
+                initScene4WithSky(); // Scene berpelukan
+                initScene5WithSky(); // Scene jembatan rubuh
+                
+                setTimeout(() => {
+                    completeLoading();
+                }, 1500);
+                
+            } catch (error) {
+                console.error('Scene initialization failed:', error);
+                completeLoading();
+            }
+        }
+        
+        function initScene1WithSky() {
+            const container = document.getElementById('three-canvas-1');
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ 
+                antialias: true,
+                alpha: true,
+                powerPreference: "high-performance"
+            });
+            
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            container.appendChild(renderer.domElement);
+            
+            // LANGIT CERAH - Gradient background
+            scene.background = new THREE.Color(0x87CEEB);
+            
+            // Soft ambient light for bright sky
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
+            scene.add(ambientLight);
+            
+            // Warm sunlight
+            const directionalLight = new THREE.DirectionalLight(0xfff5e6, 0.6);
+            directionalLight.position.set(10, 10, 5);
+            scene.add(directionalLight);
+            
+            // Beautiful environment with natural colors
+            const ground = new THREE.Mesh(
+                new THREE.PlaneGeometry(50, 50),
+                new THREE.MeshLambertMaterial({ color: 0x7cb342 })
+            );
+            ground.rotation.x = -Math.PI / 2;
+            ground.position.y = -3;
+            scene.add(ground);
+            
+            // Daratan di kiri dan kanan
+            const leftLand = new THREE.Mesh(
+                new THREE.BoxGeometry(15, 3, 25),
+                new THREE.MeshLambertMaterial({ color: 0x8d6e63 })
+            );
+            leftLand.position.set(-12, -1.5, 0);
+            scene.add(leftLand);
+            
+            const rightLand = new THREE.Mesh(
+                new THREE.BoxGeometry(15, 3, 25),
+                new THREE.MeshLambertMaterial({ color: 0x8d6e63 })
+            );
+            rightLand.position.set(12, -1.5, 0);
+            scene.add(rightLand);
+            
+            // Crystal clear river
+            const river = new THREE.Mesh(
+                new THREE.PlaneGeometry(10, 5),
+                new THREE.MeshLambertMaterial({ 
+                    color: 0x29b6f6,
+                    transparent: true,
+                    opacity: 0.8
+                })
+            );
+            river.rotation.x = -Math.PI / 2;
+            river.position.y = -2.9;
+            scene.add(river);
+            
+            // Enhanced bridge with better details
+            const bridge = createEnhancedBridge();
+            bridge.position.y = 0;
+            scene.add(bridge);
+            
+            // Beautiful characters
+            const person1 = createOptimizedCharacter(0xff7043);
+            person1.position.set(-3.5, 0.2, 0);
+            scene.add(person1);
+            
+            const person2 = createOptimizedCharacter(0x26a69a);
+            person2.position.set(3.5, 0.2, 0);
+            scene.add(person2);
+            
+            // Pohon-pohon di daratan (hanya di sisi kiri dan kanan, tidak di tengah)
+            for (let i = 0; i < 3; i++) {
+                const treeLeft = createOptimizedTree();
+                treeLeft.position.set(-15 + i * 5, 0, -8 + Math.random() * 16);
+                scene.add(treeLeft);
+                
+                const treeRight = createOptimizedTree();
+                treeRight.position.set(15 - i * 5, 0, -8 + Math.random() * 16);
+                scene.add(treeRight);
+            }
+            
+            camera.position.set(0, 6, 12);
+            camera.lookAt(0, 0, 0);
+            
+            const animate = () => {
+                requestAnimationFrame(animate);
+                river.material.opacity = 0.75 + Math.sin(Date.now() * 0.001) * 0.05;
+                renderer.render(scene, camera);
+            };
+            animate();
+            
+            appState.scenes.page1 = { scene, camera, renderer, person1, person2, bridge };
+        }
+        
+        function createOptimizedTree() {
+            const treeGroup = new THREE.Group();
+            
+            // Batang pohon (optimized)
+            const trunk = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.3, 0.4, 2, 6),
+                new THREE.MeshLambertMaterial({ color: 0x8B4513 })
+            );
+            trunk.position.y = 1;
+            treeGroup.add(trunk);
+            
+            // Daun pohon (optimized)
+            const leaves = new THREE.Mesh(
+                new THREE.SphereGeometry(1.5, 6, 4),
+                new THREE.MeshLambertMaterial({ color: 0x2E8B57 })
+            );
+            leaves.position.y = 2.5;
+            treeGroup.add(leaves);
+            
+            return treeGroup;
+        }
+        
+        function createEnhancedBridge() {
+            const bridgeGroup = new THREE.Group();
+            
+            // Bridge base
+            const bridgeBase = new THREE.Mesh(
+                new THREE.BoxGeometry(10, 0.4, 2.5),
+                new THREE.MeshLambertMaterial({ color: 0x8d6e63 })
+            );
+            bridgeGroup.add(bridgeBase);
+            
+            // Bridge railings
+            const railingLeft = new THREE.Mesh(
+                new THREE.BoxGeometry(10, 0.6, 0.1),
+                new THREE.MeshLambertMaterial({ color: 0xa1887f })
+            );
+            railingLeft.position.set(0, 0.3, -1.2);
+            bridgeGroup.add(railingLeft);
+            
+            const railingRight = new THREE.Mesh(
+                new THREE.BoxGeometry(10, 0.6, 0.1),
+                new THREE.MeshLambertMaterial({ color: 0xa1887f })
+            );
+            railingRight.position.set(0, 0.3, 1.2);
+            bridgeGroup.add(railingRight);
+            
+            // Bridge supports
+            for (let i = -4; i <= 4; i += 2) {
+                const support = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.1, 0.15, 3, 6),
+                    new THREE.MeshLambertMaterial({ color: 0x795548 })
+                );
+                support.position.set(i, -1.5, 0);
+                bridgeGroup.add(support);
+            }
+            
+            return bridgeGroup;
+        }
+        
+        function createOptimizedCharacter(color) {
+            const group = new THREE.Group();
+            
+            // Head with optimized detail
+            const head = new THREE.Mesh(
+                new THREE.SphereGeometry(0.35, 8, 8),
+                new THREE.MeshLambertMaterial({ color: 0xffdbac })
+            );
+            head.position.y = 1.6;
+            group.add(head);
+            
+            // Body with optimized detail
+            const body = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.35, 0.4, 1.1, 8),
+                new THREE.MeshLambertMaterial({ color: color })
+            );
+            body.position.y = 0.8;
+            group.add(body);
+            
+            const limbMaterial = new THREE.MeshLambertMaterial({ color: 0xffdbac });
+            
+            // Arms with optimized detail
+            const leftArm = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.08, 0.08, 0.7, 6),
+                limbMaterial
+            );
+            leftArm.position.set(-0.45, 1.15, 0);
+            leftArm.rotation.z = Math.PI / 6;
+            group.add(leftArm);
+            
+            const rightArm = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.08, 0.08, 0.7, 6),
+                limbMaterial
+            );
+            rightArm.position.set(0.45, 1.15, 0);
+            rightArm.rotation.z = -Math.PI / 6;
+            group.add(rightArm);
+            
+            // Legs with optimized detail
+            const leftLeg = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.1, 0.1, 0.8, 6),
+                new THREE.MeshLambertMaterial({ color: 0x5d4037 })
+            );
+            leftLeg.position.set(-0.15, -0.35, 0);
+            group.add(leftLeg);
+            
+            const rightLeg = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.1, 0.1, 0.8, 6),
+                new THREE.MeshLambertMaterial({ color: 0x5d4037 })
+            );
+            rightLeg.position.set(0.15, -0.35, 0);
+            group.add(rightLeg);
+            
+            return group;
+        }
+        
+        function initScene2WithSky() {
+            const container = document.getElementById('three-canvas-2');
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ 
+                antialias: true,
+                alpha: true,
+                powerPreference: "high-performance"
+            });
+            
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            container.appendChild(renderer.domElement);
+            
+            // Golden hour sky
+            scene.background = new THREE.Color(0xffd54f);
+            
+            const ambientLight = new THREE.AmbientLight(0xffcc80, 0.8);
+            scene.add(ambientLight);
+            
+            const sunLight = new THREE.DirectionalLight(0xffb74d, 0.6);
+            sunLight.position.set(-10, 5, 5);
+            scene.add(sunLight);
+            
+            const ground = new THREE.Mesh(
+                new THREE.PlaneGeometry(50, 50),
+                new THREE.MeshLambertMaterial({ color: 0x8bc34a })
+            );
+            ground.rotation.x = -Math.PI / 2;
+            ground.position.y = -3;
+            scene.add(ground);
+            
+            // Daratan di kiri dan kanan
+            const leftLand = new THREE.Mesh(
+                new THREE.BoxGeometry(15, 3, 25),
+                new THREE.MeshLambertMaterial({ color: 0x8d6e63 })
+            );
+            leftLand.position.set(-12, -1.5, 0);
+            scene.add(leftLand);
+            
+            const rightLand = new THREE.Mesh(
+                new THREE.BoxGeometry(15, 3, 25),
+                new THREE.MeshLambertMaterial({ color: 0x8d6e63 })
+            );
+            rightLand.position.set(12, -1.5, 0);
+            scene.add(rightLand);
+            
+            const river = new THREE.Mesh(
+                new THREE.PlaneGeometry(10, 5),
+                new THREE.MeshLambertMaterial({ 
+                    color: 0xffb74d,
+                    transparent: true,
+                    opacity: 0.8
+                })
+            );
+            river.rotation.x = -Math.PI / 2;
+            river.position.y = -2.9;
+            scene.add(river);
+            
+            const bridge = createEnhancedBridge();
+            bridge.position.y = 0;
+            scene.add(bridge);
+            
+            const walkingPerson = createOptimizedCharacter(0xff7043);
+            walkingPerson.position.set(-4, 0.2, 0);
+            scene.add(walkingPerson);
+            
+            const waitingPerson = createOptimizedCharacter(0x26a69a);
+            waitingPerson.position.set(4, 0.2, 0);
+            scene.add(waitingPerson);
+            
+            // Pohon-pohon di daratan (hanya di sisi kiri dan kanan, tidak di tengah)
+            for (let i = 0; i < 3; i++) {
+                const treeLeft = createOptimizedTree();
+                treeLeft.position.set(-15 + i * 5, 0, -8 + Math.random() * 16);
+                scene.add(treeLeft);
+                
+                const treeRight = createOptimizedTree();
+                treeRight.position.set(15 - i * 5, 0, -8 + Math.random() * 16);
+                scene.add(treeRight);
+            }
+            
+            camera.position.set(0, 6, 12);
+            camera.lookAt(0, 0, 0);
+            
+            let walkProgress = 0;
+            const animate = () => {
+                requestAnimationFrame(animate);
+                
+                if (appState.isWalking && walkProgress < 1) {
+                    walkProgress += 0.008;
+                    const startX = -4;
+                    const endX = 0;
+                    walkingPerson.position.x = startX + (endX - startX) * easeInOutCubic(walkProgress);
+                    walkingPerson.position.y = 0.2 + Math.sin(walkProgress * Math.PI * 8) * 0.05;
+                    
+                    if (walkingPerson.children[2] && walkingPerson.children[3]) {
+                        walkingPerson.children[2].rotation.x = Math.sin(walkProgress * Math.PI * 16) * 0.3;
+                        walkingPerson.children[3].rotation.x = -Math.sin(walkProgress * Math.PI * 16) * 0.3;
+                    }
+                }
+                
+                renderer.render(scene, camera);
+            };
+            animate();
+            
+            appState.scenes.page2 = { scene, camera, renderer, walkingPerson, waitingPerson };
+        }
+        
+        function initScene3WithSky() {
+            const container = document.getElementById('three-canvas-3');
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ 
+                antialias: true,
+                alpha: true,
+                powerPreference: "high-performance"
+            });
+            
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.setClearColor(0x2a2a3a);
+            container.appendChild(renderer.domElement);
+            
+            // Dark ambient light dengan pencahayaan yang lebih baik
+            const ambientLight = new THREE.AmbientLight(0x606060, 0.6);
+            scene.add(ambientLight);
+            
+            // Candle lights for the dark scene
+            const candleLight1 = new THREE.PointLight(0xffaa00, 1.5, 10);
+            candleLight1.position.set(-3, 2, 0);
+            scene.add(candleLight1);
+            
+            const candleLight2 = new THREE.PointLight(0xffaa00, 1.5, 10);
+            candleLight2.position.set(3, 2, 0);
+            scene.add(candleLight2);
+            
+            // Additional light to brighten the scene
+            const fillLight = new THREE.DirectionalLight(0x445588, 0.3);
+            fillLight.position.set(0, 5, 5);
+            scene.add(fillLight);
+            
+            const ground = new THREE.Mesh(
+                new THREE.PlaneGeometry(50, 50),
+                new THREE.MeshLambertMaterial({ color: 0x3d4a5c })
+            );
+            ground.rotation.x = -Math.PI / 2;
+            ground.position.y = -3;
+            scene.add(ground);
+            
+            // Daratan di kiri dan kanan
+            const leftLand = new THREE.Mesh(
+                new THREE.BoxGeometry(15, 3, 25),
+                new THREE.MeshLambertMaterial({ color: 0x5a6b82 })
+            );
+            leftLand.position.set(-12, -1.5, 0);
+            scene.add(leftLand);
+            
+            const rightLand = new THREE.Mesh(
+                new THREE.BoxGeometry(15, 3, 25),
+                new THREE.MeshLambertMaterial({ color: 0x5a6b82 })
+            );
+            rightLand.position.set(12, -1.5, 0);
+            scene.add(rightLand);
+            
+            const river = new THREE.Mesh(
+                new THREE.PlaneGeometry(10, 5),
+                new THREE.MeshLambertMaterial({ 
+                    color: 0x2a4a6e,
+                    transparent: true,
+                    opacity: 0.9
+                })
+            );
+            river.rotation.x = -Math.PI / 2;
+            river.position.y = -2.9;
+            scene.add(river);
+            
+            const bridge = createEnhancedBridge();
+            bridge.position.y = 0;
+            scene.add(bridge);
+            
+            // Kedua orang berada di tengah jembatan
+            const fallingPerson = createOptimizedCharacter(0xd32f2f);
+            fallingPerson.position.set(-1, 0.2, 0); // Kiri tengah
+            scene.add(fallingPerson);
+            
+            const sittingPerson = createOptimizedCharacter(0x00796b);
+            sittingPerson.position.set(1, 0.2, 0); // Kanan tengah
+            scene.add(sittingPerson);
+            
+            camera.position.set(0, 6, 12);
+            camera.lookAt(0, 0, 0);
+            
+            let shakeTime = 0;
+            let fallProgress = 0;
+            let sitProgress = 0;
+            let stormStarted = false;
+            
+            // Optimized rain dengan jumlah partikel lebih sedikit
+            const rainGeometry = new THREE.BufferGeometry();
+            const rainCount = 300; // Dikurangi dari 600 untuk performa
+            const positions = new Float32Array(rainCount * 3);
+            
+            for (let i = 0; i < rainCount * 3; i += 3) {
+                positions[i] = (Math.random() - 0.5) * 40;
+                positions[i + 1] = Math.random() * 30;
+                positions[i + 2] = (Math.random() - 0.5) * 40;
+            }
+            
+            rainGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            const rainMaterial = new THREE.PointsMaterial({ 
+                color: 0x90a4ae,
+                size: 0.1,
+                transparent: true,
+                opacity: 0.6
+            });
+            const rain = new THREE.Points(rainGeometry, rainMaterial);
+            scene.add(rain);
+            
+            // Candle flickering effect
+            let flickerTime = 0;
+            
+            const animate = () => {
+                requestAnimationFrame(animate);
+                
+                // Candle flickering effect
+                flickerTime += 0.05;
+                candleLight1.intensity = 1.5 + Math.sin(flickerTime) * 0.4;
+                candleLight2.intensity = 1.5 + Math.cos(flickerTime * 1.3) * 0.4;
+                
+                // Start storm animation after 2 seconds
+                if (stormStarted) {
+                    shakeTime += 0.1;
+                    bridge.rotation.z = Math.sin(shakeTime) * 0.06;
+                    bridge.rotation.x = Math.cos(shakeTime * 0.8) * 0.04;
+                    
+                    // Falling animation after 1 second
+                    if (shakeTime > 10 && fallProgress < 1) {
+                        fallProgress += 0.015;
+                        fallingPerson.position.y = 0.2 - (fallProgress * 2.5);
+                        fallingPerson.rotation.z = fallProgress * Math.PI * 1.5;
+                    }
+                    
+                    // Sitting animation after 0.5 second
+                    if (shakeTime > 5 && sitProgress < 1) {
+                        sitProgress += 0.02;
+                        sittingPerson.rotation.x = sitProgress * Math.PI / 4;
+                        sittingPerson.position.y = 0.2 - (sitProgress * 0.3);
+                    }
+                }
+                
+                const positions = rain.geometry.attributes.position.array;
+                for (let i = 1; i < positions.length; i += 3) {
+                    positions[i] -= 0.6;
+                    if (positions[i] < 0) {
+                        positions[i] = 30;
+                    }
+                }
+                rain.geometry.attributes.position.needsUpdate = true;
+                
+                renderer.render(scene, camera);
+            };
+            animate();
+            
+            appState.scenes.page3 = { 
+                scene, 
+                camera, 
+                renderer, 
+                bridge, 
+                fallingPerson, 
+                sittingPerson, 
+                rain,
+                startStorm: () => { stormStarted = true; }
+            };
+        }
+        
+        function initScene4WithSky() {
+            const container = document.getElementById('three-canvas-4');
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ 
+                antialias: true,
+                alpha: true,
+                powerPreference: "high-performance"
+            });
+            
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            container.appendChild(renderer.domElement);
+            
+            // Langit cerah kembali
+            scene.background = new THREE.Color(0x87CEEB);
+            
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xfff5e6, 0.6);
+            directionalLight.position.set(10, 10, 5);
+            scene.add(directionalLight);
+            
+            const ground = new THREE.Mesh(
+                new THREE.PlaneGeometry(50, 50),
+                new THREE.MeshLambertMaterial({ color: 0x7cb342 })
+            );
+            ground.rotation.x = -Math.PI / 2;
+            ground.position.y = -3;
+            scene.add(ground);
+            
+            // Daratan di kiri dan kanan
+            const leftLand = new THREE.Mesh(
+                new THREE.BoxGeometry(15, 3, 25),
+                new THREE.MeshLambertMaterial({ color: 0x8d6e63 })
+            );
+            leftLand.position.set(-12, -1.5, 0);
+            scene.add(leftLand);
+            
+            const rightLand = new THREE.Mesh(
+                new THREE.BoxGeometry(15, 3, 25),
+                new THREE.MeshLambertMaterial({ color: 0x8d6e63 })
+            );
+            rightLand.position.set(12, -1.5, 0);
+            scene.add(rightLand);
+            
+            const river = new THREE.Mesh(
+                new THREE.PlaneGeometry(10, 5),
+                new THREE.MeshLambertMaterial({ 
+                    color: 0x29b6f6,
+                    transparent: true,
+                    opacity: 0.8
+                })
+            );
+            river.rotation.x = -Math.PI / 2;
+            river.position.y = -2.9;
+            scene.add(river);
+            
+            const bridge = createEnhancedBridge();
+            bridge.position.y = 0;
+            scene.add(bridge);
+            
+            // Dua karakter berpelukan di tengah jembatan
+            const person1 = createOptimizedCharacter(0xff7043);
+            const person2 = createOptimizedCharacter(0x26a69a);
+            
+            // Posisi berpelukan
+            person1.position.set(-0.5, 0.2, 0);
+            person2.position.set(0.5, 0.2, 0);
+            
+            // Rotasi untuk menghadap satu sama lain
+            person1.rotation.y = Math.PI / 6;
+            person2.rotation.y = -Math.PI / 6;
+            
+            scene.add(person1);
+            scene.add(person2);
+            
+            // Pohon-pohon di daratan (hanya di sisi kiri dan kanan, tidak di tengah)
+            for (let i = 0; i < 3; i++) {
+                const treeLeft = createOptimizedTree();
+                treeLeft.position.set(-15 + i * 5, 0, -8 + Math.random() * 16);
+                scene.add(treeLeft);
+                
+                const treeRight = createOptimizedTree();
+                treeRight.position.set(15 - i * 5, 0, -8 + Math.random() * 16);
+                scene.add(treeRight);
+            }
+            
+            // Bunga-bunga di sekitar jembatan (optimized)
+            for (let i = 0; i < 10; i++) {
+                const flower = createOptimizedFlower();
+                flower.position.set(
+                    -5 + Math.random() * 10,
+                    -2.9,
+                    -2 + Math.random() * 4
+                );
+                scene.add(flower);
+            }
+            
+            camera.position.set(0, 6, 12);
+            camera.lookAt(0, 0, 0);
+            
+            let hugProgress = 0;
+            let isHugging = false;
+            
+            const animate = () => {
+                requestAnimationFrame(animate);
+                
+                if (isHugging && hugProgress < 1) {
+                    hugProgress += 0.01;
+                    
+                    // Animasi berpelukan
+                    person1.position.x = -0.5 + (0.2 * hugProgress);
+                    person2.position.x = 0.5 - (0.2 * hugProgress);
+                    
+                    // Animasi tangan berpelukan
+                    if (person1.children[2] && person1.children[3]) {
+                        person1.children[2].rotation.z = Math.PI / 3 - (Math.PI / 6 * hugProgress);
+                        person1.children[3].rotation.z = -Math.PI / 3 + (Math.PI / 6 * hugProgress);
+                    }
+                    
+                    if (person2.children[2] && person2.children[3]) {
+                        person2.children[2].rotation.z = -Math.PI / 3 + (Math.PI / 6 * hugProgress);
+                        person2.children[3].rotation.z = Math.PI / 3 - (Math.PI / 6 * hugProgress);
+                    }
+                }
+                
+                renderer.render(scene, camera);
+            };
+            animate();
+            
+            appState.scenes.page4 = { 
+                scene, 
+                camera, 
+                renderer, 
+                person1, 
+                person2,
+                startHug: () => { isHugging = true; }
+            };
+        }
+        
+        function createOptimizedFlower() {
+            const flowerGroup = new THREE.Group();
+            
+            // Batang bunga
+            const stem = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.05, 0.05, 0.5, 6),
+                new THREE.MeshLambertMaterial({ color: 0x2E8B57 })
+            );
+            stem.position.y = 0.25;
+            flowerGroup.add(stem);
+            
+            // Kelopak bunga
+            const petals = new THREE.Mesh(
+                new THREE.SphereGeometry(0.2, 6, 4),
+                new THREE.MeshLambertMaterial({ color: Math.random() > 0.5 ? 0xFF69B4 : 0xFFD700 })
+            );
+            petals.position.y = 0.5;
+            flowerGroup.add(petals);
+            
+            return flowerGroup;
+        }
+        
+        function initScene5WithSky() {
+            const container = document.getElementById('three-canvas-5');
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ 
+                antialias: true,
+                alpha: true,
+                powerPreference: "high-performance"
+            });
+            
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.setClearColor(0x2a2a3a);
+            container.appendChild(renderer.domElement);
+            
+            // Langit gelap dengan badai - lebih terang
+            scene.background = new THREE.Color(0x3a3a4a);
+            
+            const ambientLight = new THREE.AmbientLight(0x606060, 0.7);
+            scene.add(ambientLight);
+            
+            const flashLight = new THREE.DirectionalLight(0xffffff, 0);
+            flashLight.position.set(0, 10, 0);
+            scene.add(flashLight);
+            
+            // Additional lights for better visibility
+            const fillLight1 = new THREE.PointLight(0x445588, 0.4, 15);
+            fillLight1.position.set(-5, 5, 5);
+            scene.add(fillLight1);
+            
+            const fillLight2 = new THREE.PointLight(0x445588, 0.4, 15);
+            fillLight2.position.set(5, 5, 5);
+            scene.add(fillLight2);
+            
+            const ground = new THREE.Mesh(
+                new THREE.PlaneGeometry(50, 50),
+                new THREE.MeshLambertMaterial({ color: 0x4d5a6d })
+            );
+            ground.rotation.x = -Math.PI / 2;
+            ground.position.y = -3;
+            scene.add(ground);
+            
+            // Daratan di kiri dan kanan
+            const leftLand = new THREE.Mesh(
+                new THREE.BoxGeometry(15, 3, 25),
+                new THREE.MeshLambertMaterial({ color: 0x5a6b82 })
+            );
+            leftLand.position.set(-12, -1.5, 0);
+            scene.add(leftLand);
+            
+            const rightLand = new THREE.Mesh(
+                new THREE.BoxGeometry(15, 3, 25),
+                new THREE.MeshLambertMaterial({ color: 0x5a6b82 })
+            );
+            rightLand.position.set(12, -1.5, 0);
+            scene.add(rightLand);
+            
+            const river = new THREE.Mesh(
+                new THREE.PlaneGeometry(10, 5),
+                new THREE.MeshLambertMaterial({ 
+                    color: 0x2a4a6e,
+                    transparent: true,
+                    opacity: 0.9
+                })
+            );
+            river.rotation.x = -Math.PI / 2;
+            river.position.y = -2.9;
+            scene.add(river);
+            
+            // Jembatan yang rubuh
+            const brokenBridge = createBrokenBridge();
+            brokenBridge.position.y = 0;
+            scene.add(brokenBridge);
+            
+            // Karakter yang terbawa arus
+            const floatingPerson = createOptimizedCharacter(0xd32f2f);
+            floatingPerson.position.set(0, -2, 0);
+            scene.add(floatingPerson);
+            
+            camera.position.set(0, 6, 12);
+            camera.lookAt(0, 0, 0);
+            
+            let collapseProgress = 0;
+            let floatProgress = 0;
+            let isCollapsing = false;
+            let flashTime = 0;
+            
+            // Optimized rain dengan jumlah partikel lebih sedikit
+            const rainGeometry = new THREE.BufferGeometry();
+            const rainCount = 400; // Dikurangi dari 800 untuk performa
+            const positions = new Float32Array(rainCount * 3);
+            
+            for (let i = 0; i < rainCount * 3; i += 3) {
+                positions[i] = (Math.random() - 0.5) * 40;
+                positions[i + 1] = Math.random() * 30;
+                positions[i + 2] = (Math.random() - 0.5) * 40;
+            }
+            
+            rainGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            const rainMaterial = new THREE.PointsMaterial({ 
+                color: 0x90a4ae,
+                size: 0.1,
+                transparent: true,
+                opacity: 0.7
+            });
+            const rain = new THREE.Points(rainGeometry, rainMaterial);
+            scene.add(rain);
+            
+            const animate = () => {
+                requestAnimationFrame(animate);
+                
+                flashTime += 0.05;
+                // Kilat sesekali
+                if (Math.sin(flashTime) > 0.9) {
+                    flashLight.intensity = 1;
+                } else {
+                    flashLight.intensity = 0;
+                }
+                
+                if (isCollapsing) {
+                    if (collapseProgress < 1) {
+                        collapseProgress += 0.008;
+                        
+                        // Animasi jembatan rubuh
+                        brokenBridge.rotation.x = -Math.PI / 2 * collapseProgress;
+                        brokenBridge.position.y = -1.5 * collapseProgress;
+                        
+                        // Animasi orang terbawa arus
+                        if (collapseProgress > 0.3) {
+                            floatProgress += 0.01;
+                            floatingPerson.position.x = 2 * floatProgress;
+                            floatingPerson.position.y = -2 + Math.sin(floatProgress * 5) * 0.2;
+                            floatingPerson.rotation.z = Math.sin(floatProgress * 3) * 0.5;
+                        }
+                    }
+                }
+                
+                const positions = rain.geometry.attributes.position.array;
+                for (let i = 1; i < positions.length; i += 3) {
+                    positions[i] -= 0.8;
+                    if (positions[i] < 0) {
+                        positions[i] = 30;
+                    }
+                }
+                rain.geometry.attributes.position.needsUpdate = true;
+                
+                renderer.render(scene, camera);
+            };
+            animate();
+            
+            appState.scenes.page5 = { 
+                scene, 
+                camera, 
+                renderer, 
+                brokenBridge, 
+                floatingPerson,
+                startCollapse: () => { isCollapsing = true; }
+            };
+        }
+        
+        function createBrokenBridge() {
+            const bridgeGroup = new THREE.Group();
+            
+            // Bridge base yang patah
+            const bridgeBase = new THREE.Mesh(
+                new THREE.BoxGeometry(10, 0.4, 2.5),
+                new THREE.MeshLambertMaterial({ color: 0x8d6e63 })
+            );
+            bridgeGroup.add(bridgeBase);
+            
+            // Bridge railings yang patah
+            const railingLeft = new THREE.Mesh(
+                new THREE.BoxGeometry(10, 0.6, 0.1),
+                new THREE.MeshLambertMaterial({ color: 0xa1887f })
+            );
+            railingLeft.position.set(0, 0.3, -1.2);
+            bridgeGroup.add(railingLeft);
+            
+            const railingRight = new THREE.Mesh(
+                new THREE.BoxGeometry(10, 0.6, 0.1),
+                new THREE.MeshLambertMaterial({ color: 0xa1887f })
+            );
+            railingRight.position.set(0, 0.3, 1.2);
+            bridgeGroup.add(railingRight);
+            
+            // Bridge supports yang patah
+            for (let i = -4; i <= 4; i += 2) {
+                const support = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.1, 0.15, 3, 6),
+                    new THREE.MeshLambertMaterial({ color: 0x795548 })
+                );
+                support.position.set(i, -1.5, 0);
+                bridgeGroup.add(support);
+            }
+            
+            return bridgeGroup;
+        }
+        
+        function handleYesClick() {
+            console.log('Yes button clicked');
+            const yesPaper = document.getElementById('yesPaper');
+            yesPaper.style.display = 'block';
+            
+            gsap.to('#yesPaper', {
+                scale: 1,
+                opacity: 1,
+                duration: 1.5,
+                ease: "back.out(1.7)"
+            });
+        }
+        
+        function handleNoClick() {
+            console.log('No button clicked');
+            const noPaper = document.getElementById('noPaper');
+            noPaper.style.display = 'block';
+            
+            gsap.to('#noPaper', {
+                scale: 1,
+                opacity: 1,
+                duration: 1.5,
+                ease: "back.out(1.7)"
+            });
+        }
+        
+        function handleResize() {
+            const skyGradient = document.getElementById('sky-gradient');
+            const clouds = document.getElementById('clouds');
+            
+            if (skyGradient) {
+                skyGradient.style.width = window.innerWidth + 'px';
+                skyGradient.style.height = window.innerHeight + 'px';
+            }
+            
+            if (clouds) {
+                clouds.style.width = window.innerWidth + 'px';
+                clouds.style.height = window.innerHeight + 'px';
+            }
+            
+            Object.values(appState.scenes).forEach(sceneData => {
+                if (sceneData.camera && sceneData.renderer) {
+                    sceneData.camera.aspect = window.innerWidth / window.innerHeight;
+                    sceneData.camera.updateProjectionMatrix();
+                    sceneData.renderer.setSize(window.innerWidth, window.innerHeight);
+                }
+            });
+        }
+        
+        function animatePage1() {
+            gsap.to('#page1 .main-text', {
+                opacity: 1,
+                y: 0,
+                duration: 2,
+                ease: "power2.out",
+                delay: 0.5
+            });
+            
+            gsap.to('#page1 .cta-button', {
+                opacity: 1,
+                y: 0,
+                duration: 1.5,
+                ease: "power2.out",
+                delay: 1.5
+            });
+        }
+        
+        function nextPage(page) {
+            if (appState.isTransitioning) return;
+            appState.isTransitioning = true;
+            
+            // Hide sky for pages 2 and 3
+            if (page > 1) {
+                const skyGradient = document.getElementById('sky-gradient');
+                const clouds = document.getElementById('clouds');
+                if (skyGradient) skyGradient.style.display = 'none';
+                if (clouds) clouds.style.display = 'none';
+            }
+            
+            gsap.to(`#page${appState.currentPage}`, {
+                opacity: 0,
+                duration: 1.5,
+                onComplete: () => {
+                    document.getElementById(`page${appState.currentPage}`).classList.remove('active');
+                    appState.currentPage = page;
+                    document.getElementById(`page${page}`).classList.add('active');
+                    
+                    gsap.to(`#page${page}`, {
+                        opacity: 1,
+                        duration: 1.5,
+                        onComplete: () => {
+                            appState.isTransitioning = false;
+                            
+                            // Start walking animation on page 2
+                            if (page === 2 && appState.scenes.page2) {
+                                appState.isWalking = true;
+                                appState.startTime = Date.now();
+                            }
+                            
+                            // Start storm animation on page 3
+                            if (page === 3 && appState.scenes.page3 && appState.scenes.page3.startStorm) {
+                                setTimeout(() => {
+                                    appState.scenes.page3.startStorm();
+                                }, 1000);
+                            }
+                        }
+                    });
+                    
+                    if (page === 2) {
+                        animatePage2();
+                    } else if (page === 3) {
+                        animatePage3();
+                    }
+                }
+            });
+        }
+        
+        function animatePage2() {
+            gsap.to('#page2 .main-text', {
+                opacity: 1,
+                y: 0,
+                duration: 2,
+                ease: "power2.out",
+                delay: 0.5
+            });
+            
+            gsap.to('#page2 .cta-button', {
+                opacity: 1,
+                y: 0,
+                duration: 1.5,
+                ease: "power2.out",
+                delay: 1.5
+            });
+        }
+        
+        function animatePage3() {
+            gsap.to('#page3 .main-text', {
+                opacity: 1,
+                y: 0,
+                duration: 2,
+                ease: "power2.out",
+                delay: 0.5
+            });
+            
+            gsap.to('#page3 .choice-buttons', {
+                opacity: 1,
+                y: 0,
+                duration: 1.5,
+                ease: "power2.out",
+                delay: 1.5
+            });
+        }
+        
+        function happyEnding() {
+            const yesPaper = document.getElementById('yesPaper');
+            yesPaper.style.display = 'none';
+            
+            // Pindah ke scene berpelukan
+            nextPage(4);
+            
+            // Mulai animasi berpelukan setelah delay
+            setTimeout(() => {
+                if (appState.scenes.page4 && appState.scenes.page4.startHug) {
+                    appState.scenes.page4.startHug();
+                }
+            }, 1000);
+        }
+        
+        function sadEnding() {
+            const noPaper = document.getElementById('noPaper');
+            noPaper.style.display = 'none';
+            
+            // Pindah ke scene jembatan rubuh
+            nextPage(5);
+            
+            // Mulai animasi jembatan rubuh setelah delay
+            setTimeout(() => {
+                if (appState.scenes.page5 && appState.scenes.page5.startCollapse) {
+                    appState.scenes.page5.startCollapse();
+                }
+            }, 1000);
+        }
+        
+        function restartApp() {
+            // Reset semua state
+            appState.currentPage = 1;
+            appState.isWalking = false;
+            appState.walkingProgress = 0;
+            
+            // Tampilkan kembali langit
+            const skyGradient = document.getElementById('sky-gradient');
+            const clouds = document.getElementById('clouds');
+            if (skyGradient) skyGradient.style.display = 'block';
+            if (clouds) clouds.style.display = 'block';
+            
+            // Kembali ke halaman pertama
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById('page1').classList.add('active');
+            
+            // Animasikan halaman pertama
+            animatePage1();
+        }
+        
+        // Utility functions
+        function easeInOutCubic(x) {
+            return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daily Apology Fortune Cookie — Micha Edition</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #ff9e9e;
+      --secondary: #ffd3b6;
+      --accent: #a8e6cf;
+      --background: #fff9f9;
+      --text: #5a4a42;
+      --shadow-sm: 0 2px 6px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.12);
+      --shadow-lg: 0 8px 24px rgba(0,0,0,0.15);
+      --transition: all 0.35s cubic-bezier(0.165, 0.84, 0.44, 1);
+      --curve: 24px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background: linear-gradient(135deg, var(--secondary), var(--primary));
+      color: var(--text);
+      line-height: 1.6;
+      padding: 1rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-attachment: fixed;
+      overflow-x: hidden;
+    }
+
+    header {
+      text-align: center;
+      margin: 1.5rem 0 1rem;
+      width: 100%;
+      z-index: 10;
+    }
+
+    h1 {
+      font-family: 'Dancing Script', cursive;
+      font-size: 2.4rem;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.92);
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
+      padding: 0.8rem 1.5rem;
+      border-radius: var(--curve);
+      box-shadow: var(--shadow-lg);
+      margin-bottom: 0.8rem;
+      letter-spacing: 0.5px;
+      position: relative;
+      overflow: hidden;
+      border: 2px solid rgba(255, 158, 158, 0.3);
+    }
+
+    h1::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 158, 158, 0.2), transparent);
+      transform: translateX(-100%);
+      animation: shimmer 3s infinite;
+    }
+
+    @keyframes shimmer {
+      100% {
+        transform: translateX(100%);
+      }
+    }
+
+    .welcome {
+      text-align: center;
+      padding: 1.8rem 1.5rem;
+      background: rgba(255, 255, 255, 0.93);
+      backdrop-filter: blur(8px);
+      border-radius: var(--curve);
+      box-shadow: var(--shadow-lg);
+      margin: 1.2rem 0;
+      font-size: 1.25rem;
+      max-width: 550px;
+      position: relative;
+      overflow: hidden;
+      z-index: 2;
+      border: 2px solid rgba(255, 211, 182, 0.4);
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    .welcome::before {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255, 211, 182, 0.15) 0%, transparent 70%);
+      z-index: -1;
+      animation: float 8s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(10px); }
+    }
+
+    .cookie-container {
+      display: flex;
+      justify-content: center;
+      margin: 1.5rem 0;
+      position: relative;
+      min-height: 180px;
+      perspective: 1000px;
+    }
+
+    .cookie {
+      width: 140px;
+      height: 140px;
+      background: linear-gradient(145deg, #e6ccb2, #d4a76a);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+      cursor: pointer;
+      box-shadow: 
+        0 10px 25px rgba(90, 74, 66, 0.25),
+        inset 0 -8px 15px rgba(0,0,0,0.1);
+      transition: var(--transition);
+      position: relative;
+      z-index: 3;
+      border: 3px solid rgba(255, 255, 255, 0.7);
+      overflow: hidden;
+      transform-style: preserve-3d;
+    }
+
+    .cookie:hover {
+      transform: translateY(-5px) scale(1.03);
+      box-shadow: 
+        0 15px 30px rgba(90, 74, 66, 0.3),
+        inset 0 -8px 15px rgba(0,0,0,0.1);
+    }
+
+    .cookie::before {
+      content: "";
+      position: absolute;
+      width: 80%;
+      height: 80%;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: -1;
+    }
+
+    .cookie.cracking {
+      animation: crack 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+    }
+
+    @keyframes crack {
+      0% {
+        transform: scale(1) rotate(0);
+        box-shadow: 0 10px 25px rgba(90, 74, 66, 0.25);
+      }
+      25% {
+        transform: scale(0.95) rotate(-3deg);
+        box-shadow: 0 5px 15px rgba(90, 74, 66, 0.2);
+      }
+      50% {
+        transform: scale(1.05) rotate(2deg);
+        box-shadow: 0 0 0 rgba(90, 74, 66, 0);
+      }
+      75% {
+        transform: scale(0.98) rotate(-1deg);
+      }
+      100% {
+        transform: scale(0) rotate(5deg);
+        opacity: 0;
+        box-shadow: 0 0 0 rgba(90, 74, 66, 0);
+      }
+    }
+
+    .cookie-pieces {
+      position: absolute;
+      width: 140px;
+      height: 140px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    .cookie-piece {
+      width: 48%;
+      height: 48%;
+      background: linear-gradient(145deg, #e6ccb2, #d4a76a);
+      border-radius: 50%;
+      position: absolute;
+      box-shadow: inset 0 -5px 10px rgba(0,0,0,0.1);
+      border: 2px solid rgba(255, 255, 255, 0.7);
+      opacity: 0;
+      transform: translate(-50%, -50%);
+    }
+
+    .piece-1 { top: 25%; left: 25%; transform-origin: bottom right; }
+    .piece-2 { top: 25%; left: 75%; transform-origin: bottom left; }
+    .piece-3 { top: 75%; left: 25%; transform-origin: top right; }
+    .piece-4 { top: 75%; left: 75%; transform-origin: top left; }
+
+    .message-panel {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(10px);
+      border-radius: var(--curve);
+      padding: 1.8rem;
+      box-shadow: var(--shadow-lg);
+      width: 100%;
+      max-width: 580px;
+      margin: 1.5rem 0;
+      display: none;
+      animation: fadeInUp 0.6s ease-out;
+      border: 2px solid rgba(168, 230, 207, 0.4);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .message-panel::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+    }
+
+    .message-field {
+      margin-bottom: 1.6rem;
+      padding-bottom: 1.3rem;
+      position: relative;
+    }
+
+    .message-field::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 50px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary), transparent);
+      border-radius: 3px;
+    }
+
+    .message-field:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    .message-field:last-child::after {
+      display: none;
+    }
+
+    .message-field h3 {
+      color: #d4a76a;
+      margin-bottom: 0.7rem;
+      font-size: 1.3rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .message-field h3::before {
+      content: "";
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      background: var(--accent);
+      border-radius: 50%;
+    }
+
+    .message-field p {
+      margin: 0.4rem 0;
+      font-size: 1.05rem;
+      line-height: 1.7;
+      color: #6d5a4d;
+      font-weight: 400;
+    }
+
+    .source {
+      font-style: normal;
+      color: #a88c75;
+      font-weight: 500;
+      margin-top: 0.3rem;
+      display: block;
+      font-size: 0.95rem;
+    }
+
+    #bible-text {
+      white-space: pre-line;
+      line-height: 1.8;
+      font-style: italic;
+      color: #8c6d46;
+      padding-left: 8px;
+      border-left: 3px solid var(--accent);
+    }
+
+    .json-view {
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(8px);
+      border-radius: var(--curve);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-md);
+      width: 100%;
+      max-width: 580px;
+      margin: 1.5rem 0;
+      display: none;
+      font-family: 'Courier New', monospace;
+      font-size: 0.95rem;
+      border: 2px solid rgba(168, 230, 207, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .json-view::before {
+      content: "{}";
+      position: absolute;
+      top: -5px;
+      right: 15px;
+      font-size: 4rem;
+      color: rgba(168, 230, 207, 0.2);
+      font-weight: bold;
+      font-family: monospace;
+      z-index: 0;
+    }
+
+    #json-content {
+      position: relative;
+      z-index: 1;
+      color: #5a4a42;
+      line-height: 1.6;
+    }
+
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      width: 100%;
+      max-width: 580px;
+      margin: 1.5rem 0;
+    }
+
+    .btn {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
+      border: 2px solid var(--secondary);
+      border-radius: var(--curve);
+      padding: 1rem;
+      font-family: 'Quicksand', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text);
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: var(--shadow-md);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 211, 182, 0.3), transparent);
+      transition: var(--transition);
+      z-index: 1;
+    }
+
+    .btn:hover::before {
+      left: 100%;
+    }
+
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--primary);
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .btn-reset {
+      background: linear-gradient(145deg, rgba(255, 245, 245, 0.9), rgba(255, 235, 235, 0.9));
+      border-color: #ffb6b6;
+    }
+
+    .btn-json {
+      background: linear-gradient(145deg, rgba(235, 255, 245, 0.9), rgba(225, 250, 240, 0.9));
+      border-color: var(--accent);
+    }
+
+    .input-group {
+      display: flex;
+      gap: 0.8rem;
+      width: 100%;
+    }
+
+    #cookie-number {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
+      border: 2px solid var(--secondary);
+      border-radius: var(--curve);
+      padding: 0.9rem 1rem;
+      font-family: 'Quicksand', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text);
+      text-align: center;
+      transition: var(--transition);
+      box-shadow: var(--shadow-sm);
+      width: 30%;
+      min-width: 70px;
+    }
+
+    #cookie-number:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(255, 158, 158, 0.3);
+    }
+
+    #cookie-number::-webkit-outer-spin-button,
+    #cookie-number::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    #cookie-number[type=number] {
+      -moz-appearance: textfield;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: auto;
+      padding: 1.5rem 1rem 2rem;
+      font-size: 1.05rem;
+      color: rgba(90, 74, 66, 0.85);
+      font-weight: 500;
+      width: 100%;
+    }
+
+    footer::before {
+      content: "❤️";
+      margin-right: 6px;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes floatIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .floating {
+      animation: floatIn 0.7s ease-out forwards;
+    }
+
+    @media (min-width: 600px) {
+      body {
+        padding: 1.5rem;
+      }
+      
+      .controls {
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+      
+      .input-group {
+        flex: 1 1 100%;
+        max-width: 100%;
+      }
+      
+      .btn {
+        flex: 1 1 calc(50% - 0.5rem);
+        min-width: 160px;
+      }
+      
+      #cookie-number {
+        flex: 0.4;
+      }
+      
+      .btn-group {
+        flex: 0.6;
+        display: flex;
+        gap: 0.8rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 2rem;
+        padding: 0.7rem 1.2rem;
+      }
+      
+      .welcome {
+        font-size: 1.1rem;
+        padding: 1.5rem 1.2rem;
+      }
+      
+      .cookie {
+        width: 120px;
+        height: 120px;
+        font-size: 3.2rem;
+      }
+      
+      .message-panel, .json-view {
+        padding: 1.5rem;
+        font-size: 0.95rem;
+      }
+      
+      .controls {
+        gap: 0.8rem;
+      }
+      
+      .btn {
+        padding: 0.9rem;
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>✨ Daily Apology Fortune Cookie ✨</h1>
+  </header>
+
+  <main>
+    <div class="welcome floating" id="welcome">
+      <p>Welcome, my love! Tap the cookie below to receive your daily apology and encouragement.</p>
+    </div>
+
+    <div class="cookie-container" id="cookie-container">
+      <div class="cookie" id="cookie">🥠</div>
+      <div class="cookie-pieces" id="cookie-pieces">
+        <div class="cookie-piece piece-1"></div>
+        <div class="cookie-piece piece-2"></div>
+        <div class="cookie-piece piece-3"></div>
+        <div class="cookie-piece piece-4"></div>
+      </div>
+    </div>
+
+    <div class="message-panel" id="message-panel">
+      <div class="message-field">
+        <h3>Thoughtful Quote</h3>
+        <p id="quote"></p>
+        <span class="source" id="quote-source"></span>
+      </div>
+      <div class="message-field">
+        <h3>God's Comfort</h3>
+        <p id="bible-ref"></p>
+        <p id="bible-text"></p>
+      </div>
+      <div class="message-field">
+        <h3>My Apology</h3>
+        <p id="apology"></p>
+      </div>
+      <div class="message-field">
+        <h3>Love Note</h3>
+        <p id="love-note"></p>
+      </div>
+    </div>
+
+    <div class="json-view" id="json-view">
+      <pre id="json-content"></pre>
+    </div>
+
+    <div class="controls">
+      <button class="btn" id="random-btn">✨ Open Random Cookie</button>
+      <button class="btn btn-reset" id="reset-btn">↺ Reset / Play Again</button>
+      <div class="input-group">
+        <input type="number" id="cookie-number" min="1" max="6" placeholder="1-6">
+        <button class="btn" id="show-cookie-btn">🍪 Show Cookie #</button>
+      </div>
+      <button class="btn btn-json" id="toggle-json-btn"><> Show JSON Data</button>
+    </div>
+  </main>
+
+  <footer>
+    <p>Created with endless love for Micha</p>
+  </footer>
+
+  <script>
+    const COOKIES = [
+      {
+        index: 1,
+        quote: "“To love at all is to be vulnerable.” — C. S. Lewis",
+        quote_source: "The Four Loves",
+        bible_ref: "Psalm 34:18 (NIV)",
+        bible_text_niv: "“The Lord is close to the brokenhearted and saves those who are crushed in spirit.”",
+        apology: "Sayang, maaf kalau aku pernah buat kamu ngerasa gak aman. Aku cuma takut kehilangan kamu, itu aja.",
+        love_note: "Aku di sini buat kamu — kapan pun kamu butuh, ngobrol, nangis, atau diem bareng, I'm here and I love you."
+      },
+      {
+        index: 2,
+        quote: "“Let everything happen to you: beauty and terror. Just keep going. No feeling is final.” — Rainer Maria Rilke",
+        quote_source: "Letters to a Young Poet",
+        bible_ref: "Philippians 4:6–7 (NIV)",
+        bible_text_niv: "“Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God.\nAnd the peace of God, which transcends all understanding, will guard your hearts and your minds in Christ Jesus.”",
+        apology: "Maaf kalau aku kepaksa minta lebih banyak waktu. Maksudku cuma pengen lebih dekat, bukan mengikatmu.",
+        love_note: "Kamu lebih kuat dari yang kamu kira. Tarik napas. Aku selalu doain kamu."
+      },
+      {
+        index: 3,
+        quote: "“Love does not consist in gazing at each other, but in looking outward together in the same direction.” — Antoine de Saint-Exupéry",
+        quote_source: "Wind, Sand and Stars",
+        bible_ref: "Matthew 11:28 (NIV)",
+        bible_text_niv: "“Come to me, all you who are weary and burdened, and I will give you rest.”",
+        apology: "Maaf aku kadang jadi clingy. Aku akan belajar memberi ruang tanpa menghilang.",
+        love_note: "Aku mau kita maju bareng pelan tapi pasti. Kamu gak sendiri."
+      },
+      {
+        index: 4,
+        quote: "“You have power over your mind — not outside events. Realize this, and you will find strength.” — Marcus Aurelius",
+        quote_source: "Meditations",
+        bible_ref: "Psalm 147:3 (NIV)",
+        bible_text_niv: "“He heals the brokenhearted and binds up their wounds.”",
+        apology: "Terima kasih sudah sabar sama aku. Maaf kalau aku bikin repot. Aku akan usahakan Jadi pribadi yang lebih tenang. Supaya sayang gak terluka lagi :D",
+        love_note: "Istirahat yang cukup, makan yang banyak. Aku sayang kamu, dan aku gamau kamu sakit."
+      },
+      {
+        index: 5,
+        quote: "“It’s not what happens to you, but how you react to it that matters.” — Epictetus",
+        quote_source: "Discourses",
+        bible_ref: "Romans 8:38–39 (NIV)",
+        bible_text_niv: "“For I am convinced that neither death nor life, neither angels nor demons, neither the present nor the future, nor any powers,\nneither height nor depth, nor anything else in all creation, will be able to separate us from the love of God\nthat is in Christ Jesus our Lord.”",
+        apology: "Maaf aku pernah menuntut Jadi prioritas padahal aku masih banyak Salah Dan ga ngertiin kamu. Aku akan belajar dengerin kamu lebih dulu, dan menjadi Pribadi yang lebih Mirip Tuhan Yesus, Yang mencintai dengan Tulus dan tanpa menyerah.",
+        love_note: "Kalau kamu mau cerita, aku akan menjadi telinga yang sabar. Kalau tidak mau, aku tetap di sini kok, selalu."
+      },
+      {
+        index: 6,
+        quote: "“We are so unfortunate that we can only find peace in being loved, yet we are so fickle that we can never depend on that love.” — Michel de Montaigne",
+        quote_source: "Essays",
+        bible_ref: "Isaiah 41:10 (NIV)",
+        bible_text_niv: "“So do not fear, for I am with you;\ndo not be dismayed, for I am your God.\nI will strengthen you and help you;\nI will uphold you with my righteous right hand.”",
+        apology: "Ini surat kecil: maaf aku belum selalu jadi yang terbaik. But I'm gonna always try to be! :D.",
+        love_note: "Sayang sering capek belakangan ini, Aku mau selalu peluk sayang."
+      }
+    ];
+
+    let currentCookieIndex = null;
+    let jsonVisible = false;
+    let isAnimating = false;
+
+    const welcomeEl = document.getElementById('welcome');
+    const cookieEl = document.getElementById('cookie');
+    const cookieContainer = document.getElementById('cookie-container');
+    const cookiePieces = document.getElementById('cookie-pieces');
+    const pieces = document.querySelectorAll('.cookie-piece');
+    const messagePanel = document.getElementById('message-panel');
+    const jsonView = document.getElementById('json-view');
+
+    function resetGame() {
+      currentCookieIndex = null;
+      jsonVisible = false;
+      isAnimating = false;
+      
+      welcomeEl.style.display = 'block';
+      welcomeEl.classList.add('floating');
+      cookieContainer.style.display = 'flex';
+      messagePanel.style.display = 'none';
+      jsonView.style.display = 'none';
+      
+      cookieEl.classList.remove('cracking');
+      cookieEl.textContent = '🥠';
+      cookieEl.style.opacity = '1';
+      
+      cookiePieces.style.opacity = '0';
+      pieces.forEach(piece => {
+        piece.style.opacity = '0';
+    piece.style.opacity = '0';
+        piece.style.transform = 'translate(-50%, -50%) scale(1)';
+      });
+      
+      document.getElementById('toggle-json-btn').textContent = '<> Show JSON Data';
+    }
+
+    function resetToCookieState() {
+      // Hide message panel and json view
+      messagePanel.style.display = 'none';
+      jsonView.style.display = 'none';
+      jsonVisible = false;
+      
+      // Reset cookie animation 
+    cookieEl.classList.remove('cracking');
+      cookieEl.textContent = '🥠';
+      cookieEl.style.opacity = '1';
+      cookiePieces.style.opacity = '0';
+      pieces.forEach(piece => {
+        piece.style.opacity = '0';
+        piece.style.transform = 'translate(-50%, -50%) scale(1)';
+        piece.style.transition = '';
+      });
+      
+      // Show cookie container
+      cookieContainer.style.display = 'flex';
+      
+      // Hide welcome message
+      welcomeEl.style.display = 'none';
+      welcomeEl.classList.remove('floating');
+      
+      currentCookieIndex = null;
+      isAnimating = false;
+      
+      // Reset JSON button text
+      document.getElementById('toggle-json-btn').textContent = '<> Show JSON Data';
+    }
+
+    function createCrackEffect() {
+      cookiePieces.style.opacity = '1';
+      setTimeout(() => {
+        pieces.forEach((piece, index) => {
+          piece.style.opacity = '1';
+          
+          let direction;
+          switch(index) {
+            case 0: direction = 'translate(-50%, -50%) translate(-40px, -40px) rotate(-20deg)'; break;
+            case 1: direction = 'translate(-50%, -50%) translate(40px, -40px) rotate(20deg)'; break;
+            case 2: direction = 'translate(-50%, -50%) translate(-40px, 40px) rotate(20deg)'; break;
+            case 3: direction = 'translate(-50%, -50%) translate(40px, 40px) rotate(-20deg)'; break;
+          }
+          
+          setTimeout(() => {
+            piece.style.transition = 'transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s';
+            piece.style.transform = direction;
+          }, 50 * index);
+        });
+      }, 100);
+    }
+
+    function openCookie(index) {
+      if (isAnimating) return;
+      
+      isAnimating = true;
+      welcomeEl.style.display = 'none';
+      welcomeEl.classList.remove('floating');
+      
+      cookieEl.classList.add('cracking');
+      
+      cookieEl.addEventListener('animationend', () => {
+        createCrackEffect();
+        setTimeout(() => {
+          cookieContainer.style.display = 'none';
+          messagePanel.style.display = 'block';
+          
+          const cookieData = COOKIES[index - 1];
+          document.getElementById('quote').textContent = cookieData.quote;
+          document.getElementById('quote-source').textContent = cookieData.quote_source;
+          document.getElementById('bible-ref').textContent = cookieData.bible_ref;
+          document.getElementById('bible-text').textContent = cookieData.bible_text_niv;
+          document.getElementById('apology').textContent = cookieData.apology;
+          document.getElementById('love-note').textContent = cookieData.love_note;
+          
+          currentCookieIndex = index;
+          isAnimating = false;
+        }, 400);
+      }, { once: true });
+    }
+
+    function getRandomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    cookieEl.addEventListener('click', () => {
+      if (isAnimating) return;
+      
+      if (currentCookieIndex !== null) {
+        resetToCookieState();
+      }
+      
+      const randomIndex = getRandomInt(1, 6);
+      openCookie(randomIndex);
+    });
+
+    document.getElementById('random-btn').addEventListener('click', () => {
+      if (isAnimating) return;
+      
+      if (currentCookieIndex !== null) {
+        resetToCookieState();
+      }
+      
+      const randomIndex = getRandomInt(1, 6);
+      openCookie(randomIndex);
+    });
+
+    document.getElementById('reset-btn').addEventListener('click', resetGame);
+
+    document.getElementById('show-cookie-btn').addEventListener('click', () => {
+      if (isAnimating) return;
+      
+      const input = document.getElementById('cookie-number');
+      const value = parseInt(input.value);
+      
+      if (isNaN(value) || value < 1 || value > 6) {
+        input.value = '';
+        input.placeholder = 'Enter 1-6!';
+        input.style.borderColor = '#ff6b6b';
+        setTimeout(() => {
+          input.placeholder = '1-6';
+          input.style.borderColor = '';
+        }, 2000);
+        return;
+      }
+      
+      if (currentCookieIndex !== null) {
+        resetToCookieState();
+      }
+
+      openCookie(value);
+    });
+
+    document.getElementById('toggle-json-btn').addEventListener('click', () => {
+      if (currentCookieIndex === null) {
+        alert('Please open a cookie first!');
+        return;
+      }
+      
+      jsonVisible = !jsonVisible;
+      jsonView.style.display = jsonVisible ? 'block' : 'none';
+      
+      if (jsonVisible) {
+        const cookieData = COOKIES[currentCookieIndex - 1];
+        document.getElementById('json-content').textContent = 
+          JSON.stringify(cookieData, null, 2);
+        document.getElementById('toggle-json-btn').textContent = '<> Hide JSON Data';
+      } else {
+        document.getElementById('toggle-json-btn').textContent = '<> Show JSON Data';
+      }
+    });
+
+    // Initialize
+    resetGame();
+  </script>
+</body>
+</html>
+
+                                                                

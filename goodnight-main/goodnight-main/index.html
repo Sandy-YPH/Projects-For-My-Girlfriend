@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goodnight, My Love 💕</title>
+    <!-- Google Fonts: Inter & Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #ff6b9d;
+            --secondary-color: #ffa8cc;
+            --accent-color: #ff4081;
+            --text-color: #444;
+            --text-light: #666;
+            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            color: var(--text-color);
+            line-height: 1.7;
+            font-weight: 400;
+        }
+
+        /* Animated background hearts */
+        .heart {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.2);
+            animation: float 6s ease-in-out infinite;
+            font-size: 24px;
+            pointer-events: none;
+            user-select: none;
+            z-index: 1;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.7; }
+            90% { opacity: 0.7; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .header h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: clamp(2.5rem, 8vw, 4rem);
+            color: white;
+            margin-bottom: 10px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            background: linear-gradient(45deg, #fff, #f0f0f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 300;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.5s forwards;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: var(--transition);
+            opacity: 0;
+            animation: fadeInUp 1s ease-out forwards;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:nth-child(1) { animation-delay: 0.2s; }
+        .card:nth-child(2) { animation-delay: 0.4s; }
+        .card:nth-child(3) { animation-delay: 0.6s; }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .card h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: clamp(1.5rem, 4vw, 2.2rem);
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-weight: 600;
+            position: relative;
+        }
+
+        .card p {
+            font-size: clamp(1rem, 2.5vw, 1.15rem);
+            color: var(--text-light);
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .media-container {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed #ddd;
+            transition: var(--transition);
+        }
+
+        .media-container:hover {
+            border-color: var(--primary-color);
+            background: #fff;
+        }
+
+        .media-placeholder {
+            text-align: center;
+            color: #999;
+            font-size: 1.1rem;
+        }
+
+        .media-placeholder .icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            opacity: 0.5;
+        }
+
+        .image-container {
+            height: 250px;
+        }
+
+        .video-container {
+            height: 350px;
+        }
+
+        /* Media elements styling */
+        .media-container img,
+        .media-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 10px;
+        }
+
+        /* Bible Verse Section */
+        .bible-verse-box {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.8s forwards;
+        }
+
+        .bible-verse-box::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(180deg); }
+        }
+
+        .bible-verse-box .verse {
+            font-family: 'Poppins', sans-serif;
+            font-size: clamp(1.3rem, 3.5vw, 1.8rem);
+            font-style: italic;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+            line-height: 1.7;
+            font-weight: 300;
+        }
+
+        .bible-verse-box .reference {
+            font-size: clamp(1rem, 2.5vw, 1.3rem);
+            position: relative;
+            z-index: 1;
+            opacity: 0.9;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .bible-verse-box .prayer {
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            margin-top: 25px;
+            position: relative;
+            z-index: 1;
+            opacity: 0.85;
+            font-weight: 300;
+            line-height: 1.6;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .floating-hearts {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .floating-heart {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 20px;
+            animation: floatHeart 8s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes floatHeart {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .interactive-btn {
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 20px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .interactive-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .interactive-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .interactive-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 64, 129, 0.4);
+        }
+
+        .interactive-btn:active {
+            transform: translateY(0);
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .pulse {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        /* Responsive Design */
+        @media (min-width: 768px) {
+            .content-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .header {
+                margin-bottom: 60px;
+            }
+            
+            .card {
+                padding: 40px;
+            }
+            
+            .media-container {
+                height: 350px;
+            }
+            
+            .image-container {
+                height: 300px;
+            }
+            
+            .video-container {
+                height: 400px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .content-grid {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+            
+            .container {
+                padding: 40px;
+            }
+        }
+
+        /* Loading animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Touch feedback for mobile */
+        @media (hover: none) {
+            .card:active {
+                transform: scale(0.98);
+            }
+            
+            .interactive-btn:active {
+                transform: scale(0.95);
+            }
+        }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --text-color: #f0f0f0;
+                --text-light: #ddd;
+                --card-bg: rgba(30, 30, 30, 0.95);
+                --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            }
+            
+            .media-container {
+                background: #2a2a2a;
+                border-color: #444;
+            }
+            
+            .media-container:hover {
+                border-color: var(--primary-color);
+                background: #333;
+            }
+            
+            .media-placeholder {
+                color: #999;
+            }
+        }
+
+        /* Accessibility improvements */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            
+            .heart, .floating-heart {
+                display: none;
+            }
+        }
+
+        /* Focus styles for keyboard navigation */
+        .interactive-btn:focus,
+        .card:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                background: white;
+                color: black;
+            }
+            
+            .heart, .floating-heart, .interactive-btn {
+                display: none;
+            }
+            
+            .card {
+                break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating background hearts -->
+    <div id="floating-hearts"></div>
+
+    <div class="container">
+        <header class="header">
+            <h1>Goodnight, Sayang aku yang cantikk 💕</h1>
+            <p>Every night with you in my heart is a night well spent</p>
+        </header>
+
+        <div class="content-grid">
+            <div class="card">
+                <h2>My World, My Light, My Hope</h2>
+                <p>Malam ini malam yang indah ya sayang? Aku gatau disana bagaimana tapi bulan terlihat Jelas disini. Saat aku ngeliat Bulan di malam hari, aku keingat kamu, gimana kamu menyiari hidup aku yang sebelumnya gelap dan kehilangan arah,
+                   Indahnya senyum kamu seperti permukaan bulan, Mungkin kamu akan bilang aku Alay kayak biasa tapi ini bener yang aku rasakan. I love you sayang, A lot. You're my Hope, My Light, My whole World. I can't imagine my life without you.
+                </p>
+                <div class="media-container image-container">
+                    <img src="media/photo.jpg" alt="Our special moment" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="media-placeholder" style="display: none;">
+                        <div class="icon">📸</div>
+                        <p>Add your photo at: media/photo.jpg</p>
+                        <small>Recommended: 4:3 or 16:9 aspect ratio</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Selamat Malam Sayang!</h2>
+                <p>Sayang aku hari ini banyak banget kegiatannya ya? Kamu selalu bekerja keras, selalu ngasih yang terbaik. Dan Kamu tau? Aku bangga banget punya pacar kayak kamu. Kamu Cantik, Pinter, Baik, Suka Menolong, Lucu(maksudnya dua dua nya, lucu dalam hal humoris dan dalam segi fisik :p), Disiplin, Rajin,
+                    Dan Taat sama Tuhan lagi. Aku setiap hari bertanya tanya what did i do to deserve you but i'm glad that i have you. I love you sayang, aku sayang kamu. Ini sudah waktunya kamu tidur, jadi aku harap tidur kamu nyeynyak yaa, Mimpi kamu Indah, mimpiin aku okeiii? Goodnight Sayanggg! </p>
+                <div class="media-container video-container">
+                    <video controls loop muted>
+                        <source src="media/video.mp4" type="video/mp4">
+                        <source src="media/video.webm" type="video/webm">
+                        <source src="media/video.mov" type="video/quicktime">
+                        Your browser does not support the video tag.
+                    </video>
+                    <div class="media-placeholder" style="display: none;">
+                        <div class="icon">🎬</div>
+                        <p>Add your video at: media/video.mp4</p>
+                        <small>Supported formats: MP4, WebM, MOV</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Counting My Blessings 💖</h2>
+                <p>Setiap malam sebelum aku tidur, aku selalu mencoba menghitung hal-hal yang membuatku bersyukur dalam hidup ini. Dan entah berapa kali pun aku melakukannya, namamu selalu muncul di urutan pertama. Kehadiranmu membuat segalanya terasa lebih ringan, bahkan di hari-hari paling berat sekalipun.
+                Aku sering berpikir, betapa beruntungnya aku bisa memiliki seseorang yang bukan hanya menjadi tempat berbagi tawa, tapi juga tempat aku berlabuh ketika hati sedang rapuh. Kamu bukan hanya cinta dalam hidupku, tapi juga sahabat yang selalu ada, orang yang bisa kupercaya, dan rumah yang selalu menenangkan.</p>
+                <p>Terima kasih sudah menjadi bagian terpenting dalam hidupku—menjadi seseorang yang mengajarkanku arti kesabaran, pengertian, dan kasih sayang yang tulus. Kamu membuat aku merasa cukup, merasa dihargai, dan benar-benar dicintai apa adanya.
+                Malam ini, seperti malam-malam sebelumnya, aku ingin kamu tidur dengan hati yang tenang. Ketahuilah, kamu dicintai dengan sepenuh hati, tanpa syarat, dan tanpa akhir. Semoga mimpimu indah, karena kamu adalah alasan indahnya mimpiku.</p>
+                <button class="interactive-btn" onclick="showLoveMessage()">Tekan aku dongg 💕</button>
+            </div>
+        </div>
+
+        <div class="bible-verse-box">
+            <div class="verse">"When you lie down, you will not be afraid; when you lie down, your sleep will be sweet."</div>
+            <div class="reference">Proverbs 3:24 💫</div>
+            <div class="prayer">
+                Aku tau kamu capek banget hari ini.
+                Semoga tidurmu nyenyak malam ini dan tubuhmu benar-benar bisa pulih.
+                Ingat ya, kamu selalu disayang—bukan cuma sama Aku, tapi juga sama Tuhan.
+                Selamat beristirahat, sayangku. 🌙✨
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Create floating hearts
+        function createFloatingHearts() {
+            const container = document.getElementById('floating-hearts');
+            const heartSymbols = ['💕', '💖', '💗', '💓', '💝', '💘', '❤️', '🧡', '💛'];
+            
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.innerHTML = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                heart.style.animationDelay = Math.random() * 2 + 's';
+                heart.style.fontSize = (Math.random() * 10 + 20) + 'px';
+                container.appendChild(heart);
+                
+                setTimeout(() => heart.remove(), 6000);
+            }, 300);
+        }
+
+        // Create floating hearts in bible verse box
+        function createBibleVerseHearts() {
+            const bibleVerseBox = document.querySelector('.bible-verse-box');
+            
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.className = 'floating-heart';
+                heart.innerHTML = '💖';
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.animationDuration = (Math.random() * 4 + 6) + 's';
+                heart.style.animationDelay = Math.random() * 2 + 's';
+                bibleVerseBox.appendChild(heart);
+                
+                setTimeout(() => heart.remove(), 8000);
+            }, 1500);
+        }
+
+        // Love message interaction
+        function showLoveMessage() {
+            const messages = [
+                "You are my everything! 💕",
+                "Forever isn't long enough with you! 💖",
+                "You're the reason I believe in love! 💗",
+                "My heart beats only for you! 💓",
+                "You complete me in every way! 💝",
+                "I'm yours, today and always! 💘"
+            ];
+            
+            const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            
+            btn.innerHTML = '<span class="loading"></span>';
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                btn.innerHTML = randomMessage;
+                btn.classList.add('pulse');
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.classList.remove('pulse');
+                    btn.disabled = false;
+                }, 2000);
+            }, 1000);
+        }
+
+        // Add gentle parallax effect on scroll
+        function addParallaxEffect() {
+            const cards = document.querySelectorAll('.card');
+            
+            window.addEventListener('scroll', () => {
+                const scrolled = window.pageYOffset;
+                
+                cards.forEach((card, index) => {
+                    const rate = scrolled * -0.5 * (index + 1) / 10;
+                    card.style.transform = `translateY(${rate}px)`;
+                });
+            });
+        }
+
+        // Add touch feedback for mobile
+        function addTouchFeedback() {
+            const cards = document.querySelectorAll('.card');
+            const buttons = document.querySelectorAll('.interactive-btn');
+            
+            [...cards, ...buttons].forEach(element => {
+                element.addEventListener('touchstart', function() {
+                    this.style.transform = 'scale(0.98)';
+                });
+                
+                element.addEventListener('touchend', function() {
+                    this.style.transform = '';
+                });
+            });
+        }
+
+        // Initialize everything when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            createFloatingHearts();
+            createBibleVerseHearts();
+            addParallaxEffect();
+            addTouchFeedback();
+            
+            // Add subtle animation to header on load
+            setTimeout(() => {
+                document.querySelector('.header h1').classList.add('pulse');
+            }, 1000);
+        });
+
+        // Add keyboard navigation support
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                const focusedElement = document.activeElement;
+                if (focusedElement.classList.contains('interactive-btn')) {
+                    e.preventDefault();
+                    focusedElement.click();
+                }
+            }
+        });
+
+        // Service Worker for offline functionality (optional)
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('data:text/javascript,' + encodeURIComponent(`
+                self.addEventListener('install', e => {
+                    e.waitUntil(
+                        caches.open('goodnight-v1').then(cache => {
+                            return cache.addAll([
+                                '/',
+                                '/favicon.ico'
+                            ]);
+                        })
+                    );
+                });
+                
+                self.addEventListener('fetch', e => {
+                    e.respondWith(
+                        caches.match(e.request).then(response => {
+                            return response || fetch(e.request);
+                        })
+                    );
+                });
+            `)).catch(() => {
+                // Silently fail if service worker registration fails
+            });
+        }
+    </script>
+</body>
+</html>

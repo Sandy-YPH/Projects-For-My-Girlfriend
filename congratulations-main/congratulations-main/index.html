@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Congratulations! 🎉</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        button, div {
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+        }
+
+        p, h1, h2, span {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(to bottom right, #fce7f3, #ffe4e6, #fecdd3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        
+        .font-serif {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 42rem;
+            margin: 0 auto;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .stage {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .stage.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-fadeIn {
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes smoothPulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.02);
+            }
+        }
+
+        .gift-pulse {
+            animation: smoothPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+        
+        .animate-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .space-y-8 > * + * {
+            margin-top: 2rem;
+        }
+
+        .space-y-6 > * + * {
+            margin-top: 1.5rem;
+        }
+
+        .space-y-4 > * + * {
+            margin-top: 1rem;
+        }
+
+        h1 {
+            font-size: 3rem;
+            color: #e11d48;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            color: #e11d48;
+            font-weight: 700;
+        }
+
+        .intro-text {
+            font-size: 1.25rem;
+            color: #1f2937;
+            line-height: 1.75;
+            padding: 0 1rem;
+        }
+
+        .intro-text span {
+            color: #f43f5e;
+            font-weight: 600;
+        }
+
+        .start-btn {
+            margin-top: 2rem;
+            padding: 1rem 2.5rem;
+            background: linear-gradient(to right, #ec4899, #f43f5e);
+            color: white;
+            font-size: 1.25rem;
+            font-weight: 600;
+            border-radius: 9999px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+            pointer-events: auto;
+        }
+
+        .start-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
+        }
+
+        .start-btn:active {
+            transform: scale(0.95);
+        }
+
+        #canvas-container, #roses-canvas {
+            width: 100%;
+            height: 24rem;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            background: white;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        #canvas-container:active {
+            transform: scale(0.98);
+        }
+
+        .start-btn:focus,
+        #canvas-container:focus {
+            outline: none;
+        }
+
+        .click-text {
+            font-size: 1.25rem;
+            color: #f43f5e;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .message-text {
+            font-size: 1.25rem;
+            color: #374151;
+        }
+
+        .love-text {
+            font-size: 1.875rem;
+            color: #f43f5e;
+            font-weight: 600;
+        }
+
+        .px-4 {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            h1 {
+                font-size: 4.5rem;
+            }
+
+            h2 {
+                font-size: 3rem;
+            }
+
+            .intro-text {
+                font-size: 1.875rem;
+            }
+
+            .start-btn {
+                font-size: 1.25rem;
+            }
+
+            #canvas-container, #roses-canvas {
+                height: 28rem;
+            }
+
+            .message-text {
+                font-size: 1.5rem;
+            }
+
+            .love-text {
+                font-size: 2.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Initial Stage -->
+        <div id="initial-stage" class="stage active text-center space-y-8">
+            <h1 class="font-serif">Hey!</h1>
+            <p class="intro-text">
+                I heard you did well on your report today.<br />
+                <span>Congrats!</span>
+            </p>
+            <button id="start-btn" class="start-btn">
+                Click here ✨
+            </button>
+        </div>
+
+        <!-- Gift Stage -->
+        <div id="gift-stage" class="stage text-center space-y-6 hidden">
+            <div id="canvas-container" class="gift-pulse"></div>
+            <p id="click-text" class="click-text">
+                ✨ Click 5 more times... ✨
+            </p>
+        </div>
+
+        <!-- Roses Stage -->
+        <div id="roses-stage" class="stage text-center space-y-6 hidden">
+            <div id="roses-canvas"></div>
+            <div class="space-y-4 px-4">
+                <h2 class="font-serif">I'm proud of you</h2>
+                <p class="message-text">Here's some digital roses for you</p>
+                <p class="love-text font-serif">I love you ❤️</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let stage = 'initial';
+        let clicks = 0;
+        let scene, camera, renderer, boxGroup, lid, bowGroup, roseGroup, pointLight;
+        let animationId;
+
+        // Get elements
+        const initialStage = document.getElementById('initial-stage');
+        const giftStage = document.getElementById('gift-stage');
+        const rosesStage = document.getElementById('roses-stage');
+        const startBtn = document.getElementById('start-btn');
+        const canvasContainer = document.getElementById('canvas-container');
+        const rosesCanvas = document.getElementById('roses-canvas');
+        const clickText = document.getElementById('click-text');
+
+        function initScene(container) {
+            // Setup scene
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0xfff5f8);
+
+            // Setup camera
+            camera = new THREE.PerspectiveCamera(
+                50,
+                container.clientWidth / container.clientHeight,
+                0.1,
+                1000
+            );
+            camera.position.set(0, 1, 8);
+
+            // Setup renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.shadowMap.enabled = true;
+            container.appendChild(renderer.domElement);
+
+            // Lights
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6);
+            directionalLight.position.set(5, 5, 5);
+            directionalLight.castShadow = true;
+            scene.add(directionalLight);
+
+            pointLight = new THREE.PointLight(0xffb6c1, 0.5);
+            pointLight.position.set(-3, 3, 3);
+            scene.add(pointLight);
+        }
+
+        function createGiftBox() {
+            boxGroup = new THREE.Group();
+
+            // Main box
+            const boxGeometry = new THREE.BoxGeometry(2, 2, 2);
+            const boxMaterial = new THREE.MeshStandardMaterial({
+                color: 0xff1493,
+                metalness: 0.3,
+                roughness: 0.4
+            });
+            const box = new THREE.Mesh(boxGeometry, boxMaterial);
+            box.castShadow = true;
+            boxGroup.add(box);
+
+            // Lid
+            const lidGeometry = new THREE.BoxGeometry(2.2, 0.3, 2.2);
+            const lidMaterial = new THREE.MeshStandardMaterial({
+                color: 0xc71585,
+                metalness: 0.4,
+                roughness: 0.3
+            });
+            lid = new THREE.Mesh(lidGeometry, lidMaterial);
+            lid.position.y = 1.15;
+            lid.castShadow = true;
+            boxGroup.add(lid);
+
+            // Ribbons
+            const ribbonMaterial = new THREE.MeshStandardMaterial({
+                color: 0xffd700,
+                metalness: 0.7,
+                roughness: 0.2
+            });
+
+            const ribbonV = new THREE.Mesh(
+                new THREE.BoxGeometry(0.15, 2.5, 0.15),
+                ribbonMaterial
+            );
+            boxGroup.add(ribbonV);
+
+            const ribbonH = new THREE.Mesh(
+                new THREE.BoxGeometry(2.5, 0.15, 0.15),
+                ribbonMaterial
+            );
+            ribbonH.position.y = 1;
+            boxGroup.add(ribbonH);
+
+            // Bow
+            bowGroup = new THREE.Group();
+            const bowMaterial = new THREE.MeshStandardMaterial({
+                color: 0xffd700,
+                metalness: 0.6,
+                roughness: 0.3
+            });
+
+            const bowCenter = new THREE.Mesh(
+                new THREE.SphereGeometry(0.2, 16, 16),
+                bowMaterial
+            );
+            bowGroup.add(bowCenter);
+
+            const bowLoop1 = new THREE.Mesh(
+                new THREE.TorusGeometry(0.25, 0.1, 12, 24),
+                bowMaterial
+            );
+            bowLoop1.rotation.y = Math.PI / 2;
+            bowLoop1.position.x = -0.3;
+            bowGroup.add(bowLoop1);
+
+            const bowLoop2 = new THREE.Mesh(
+                new THREE.TorusGeometry(0.25, 0.1, 12, 24),
+                bowMaterial
+            );
+            bowLoop2.rotation.y = Math.PI / 2;
+            bowLoop2.position.x = 0.3;
+            bowGroup.add(bowLoop2);
+
+            bowGroup.position.y = 1.5;
+            boxGroup.add(bowGroup);
+
+            scene.add(boxGroup);
+        }
+
+        function createRose(x, y, z, rotation) {
+            const rose = new THREE.Group();
+
+            const petalMaterial = new THREE.MeshStandardMaterial({
+                color: 0xdc143c,
+                metalness: 0.2,
+                roughness: 0.5
+            });
+
+            // Outer petals
+            for (let i = 0; i < 8; i++) {
+                const angle = (i / 8) * Math.PI * 2;
+                const petal = new THREE.Mesh(
+                    new THREE.SphereGeometry(0.2, 12, 12),
+                    petalMaterial
+                );
+                petal.position.x = Math.cos(angle) * 0.35;
+                petal.position.z = Math.sin(angle) * 0.35;
+                petal.scale.set(0.8, 1.2, 0.5);
+                petal.rotation.y = angle;
+                rose.add(petal);
+            }
+
+            // Middle petals
+            for (let i = 0; i < 6; i++) {
+                const angle = (i / 6) * Math.PI * 2 + 0.3;
+                const petal = new THREE.Mesh(
+                    new THREE.SphereGeometry(0.15, 12, 12),
+                    petalMaterial
+                );
+                petal.position.x = Math.cos(angle) * 0.2;
+                petal.position.z = Math.sin(angle) * 0.2;
+                petal.position.y = 0.05;
+                petal.scale.set(0.7, 1.1, 0.4);
+                petal.rotation.y = angle;
+                rose.add(petal);
+            }
+
+            // Center
+            const centerMaterial = new THREE.MeshStandardMaterial({
+                color: 0x8b0000,
+                metalness: 0.3,
+                roughness: 0.6
+            });
+            const center = new THREE.Mesh(
+                new THREE.SphereGeometry(0.12, 12, 12),
+                centerMaterial
+            );
+            center.position.y = 0.1;
+            rose.add(center);
+
+            // Stem
+            const stemMaterial = new THREE.MeshStandardMaterial({
+                color: 0x228b22,
+                metalness: 0.1,
+                roughness: 0.8
+            });
+            const stem = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.04, 0.05, 2, 8),
+                stemMaterial
+            );
+            stem.position.y = -1.2;
+            rose.add(stem);
+
+            // Leaves
+            const leafMaterial = new THREE.MeshStandardMaterial({
+                color: 0x2d5016,
+                metalness: 0.2,
+                roughness: 0.7
+            });
+
+            const leaf1 = new THREE.Mesh(
+                new THREE.SphereGeometry(0.15, 8, 8),
+                leafMaterial
+            );
+            leaf1.scale.set(1.5, 0.3, 0.6);
+            leaf1.position.set(0.15, -0.6, 0);
+            leaf1.rotation.z = 0.5;
+            rose.add(leaf1);
+
+            const leaf2 = new THREE.Mesh(
+                new THREE.SphereGeometry(0.15, 8, 8),
+                leafMaterial
+            );
+            leaf2.scale.set(1.5, 0.3, 0.6);
+            leaf2.position.set(-0.15, -0.9, 0);
+            leaf2.rotation.z = -0.5;
+            rose.add(leaf2);
+
+            rose.position.set(x, y, z);
+            rose.rotation.y = rotation;
+            return rose;
+        }
+
+        function createRoses() {
+            console.log('Creating roses...');
+            roseGroup = new THREE.Group();
+
+            // Add multiple roses
+            roseGroup.add(createRose(0, 0.3, 0, 0));
+            roseGroup.add(createRose(-0.7, 0, 0.5, 0.6));
+            roseGroup.add(createRose(0.7, 0, 0.5, -0.6));
+            roseGroup.add(createRose(-0.6, -0.3, -0.3, 1));
+            roseGroup.add(createRose(0.6, -0.3, -0.3, -1));
+            roseGroup.add(createRose(0, -0.5, 0.6, 0.4));
+
+            // Wrapper
+            const wrapperMaterial = new THREE.MeshStandardMaterial({
+                color: 0xffe4e1,
+                metalness: 0.1,
+                roughness: 0.5,
+                side: THREE.DoubleSide
+            });
+            const wrapper = new THREE.Mesh(
+                new THREE.ConeGeometry(1, 1.8, 24),
+                wrapperMaterial
+            );
+            wrapper.position.y = -1.3;
+            roseGroup.add(wrapper);
+
+            // Ribbon
+            const ribbonMaterial = new THREE.MeshStandardMaterial({
+                color: 0xff69b4,
+                metalness: 0.5,
+                roughness: 0.3
+            });
+            const ribbon = new THREE.Mesh(
+                new THREE.TorusGeometry(0.95, 0.06, 12, 32),
+                ribbonMaterial
+            );
+            ribbon.rotation.x = Math.PI / 2;
+            ribbon.position.y = -0.7;
+            roseGroup.add(ribbon);
+
+            roseGroup.position.y = -8;
+            scene.add(roseGroup);
+            
+            console.log('Roses added to scene:', roseGroup);
+
+            // Animate roses rising
+            const start = Date.now();
+            function animateRose() {
+                if (!roseGroup || stage !== 'roses') return;
+                
+                const elapsed = Date.now() - start;
+                const progress = Math.min(elapsed / 2000, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                
+                roseGroup.position.y = -8 + eased * 8;
+                roseGroup.rotation.y = eased * Math.PI * 1.5;
+                
+                if (progress < 1) {
+                    requestAnimationFrame(animateRose);
+                }
+            }
+            animateRose();
+        }
+
+        function animate() {
+            if (!scene || !camera || !renderer) return;
+            
+            animationId = requestAnimationFrame(animate);
+
+            if (stage === 'gift' && boxGroup && lid && bowGroup) {
+                const progress = clicks / 5;
+                
+                boxGroup.rotation.y += 0.003;
+                
+                lid.position.y = 1.15 + progress * 2.5;
+                lid.rotation.x = progress * (Math.PI / 4);
+                
+                bowGroup.position.y = 1.5 + progress * 2.5;
+                bowGroup.rotation.x = progress * (Math.PI / 4);
+
+                if (clicks >= 4 && pointLight) {
+                    pointLight.intensity = 0.5 + (clicks - 4) * 1.5;
+                }
+            }
+
+            if (stage === 'roses' && roseGroup) {
+                roseGroup.rotation.y += 0.002;
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        function handleResize() {
+            if (!renderer || !camera) return;
+            
+            const container = stage === 'gift' ? canvasContainer : rosesCanvas;
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+            renderer.setSize(width, height);
+        }
+
+        function cleanup() {
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+            
+            if (renderer && renderer.domElement) {
+                const parent = renderer.domElement.parentNode;
+                if (parent) {
+                    try {
+                        parent.removeChild(renderer.domElement);
+                    } catch (e) {
+                        console.log('Cleanup error:', e);
+                    }
+                }
+                renderer.dispose();
+                renderer = null;
+            }
+            
+            if (scene) {
+                scene.clear();
+                scene = null;
+            }
+
+            camera = null;
+            boxGroup = null;
+            lid = null;
+            bowGroup = null;
+            roseGroup = null;
+            pointLight = null;
+        }
+
+        // Event handlers
+        startBtn.addEventListener('click', () => {
+            stage = 'gift';
+            
+            // Smooth transition
+            initialStage.classList.remove('active');
+            setTimeout(() => {
+                initialStage.classList.add('hidden');
+                giftStage.classList.remove('hidden');
+                setTimeout(() => {
+                    giftStage.classList.add('active');
+                }, 50);
+            }, 600);
+            
+            setTimeout(() => {
+                initScene(canvasContainer);
+                createGiftBox();
+                animate();
+            }, 650);
+        });
+
+        canvasContainer.addEventListener('click', () => {
+            if (stage !== 'gift') return;
+            
+            clicks++;
+            
+            // Add visual feedback
+            canvasContainer.style.transform = 'scale(0.98)';
+            setTimeout(() => {
+                canvasContainer.style.transform = '';
+            }, 100);
+            
+            if (clicks < 5) {
+                clickText.textContent = `✨ Click ${5 - clicks} more ${5 - clicks === 1 ? 'time' : 'times'}... ✨`;
+                // Animate text
+                clickText.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    clickText.style.transform = '';
+                }, 200);
+            } else {
+                clickText.textContent = '✨ Opening... ✨';
+                canvasContainer.classList.remove('gift-pulse');
+                
+                setTimeout(() => {
+                    stage = 'roses';
+                    cleanup();
+                    
+                    // Smooth transition
+                    giftStage.classList.remove('active');
+                    setTimeout(() => {
+                        giftStage.classList.add('hidden');
+                        rosesStage.classList.remove('hidden');
+                        
+                        // Initialize roses scene immediately
+                        initScene(rosesCanvas);
+                        createRoses();
+                        animate();
+                        
+                        setTimeout(() => {
+                            rosesStage.classList.add('active');
+                        }, 50);
+                    }, 600);
+                }, 800);
+            }
+        });
+
+        window.addEventListener('resize', handleResize);
+
+        // Make sure DOM is fully loaded
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('Page loaded successfully');
+            console.log('Start button:', startBtn);
+        });
+
+        // Alternative click handler - both click and touchstart
+        startBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            startBtn.click();
+        }, { passive: false });
+
+        canvasContainer.addEventListener('touchstart', (e) => {
+            if (stage === 'gift') {
+                e.preventDefault();
+                canvasContainer.click();
+            }
+        }, { passive: false });
+    </script>
+</body>
+</html>

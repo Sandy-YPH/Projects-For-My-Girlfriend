@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Good Morning Cantik</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500&display=swap');
+        
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        #root {
+            width: 100vw;
+            height: 100vh;
+        }
+        
+        .text-reveal {
+            animation: textReveal 2s ease-out forwards;
+        }
+        
+        .button-reveal {
+            animation: buttonReveal 1.5s ease-out 2.5s forwards;
+        }
+        
+        @keyframes textReveal {
+            0% { 
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes buttonReveal {
+            0% { 
+                opacity: 0;
+                transform: translateY(30px) scale(0.9);
+            }
+            100% { 
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .paper-texture {
+            background-image: 
+                repeating-linear-gradient(
+                    0deg,
+                    rgba(139, 69, 19, 0.03),
+                    rgba(139, 69, 19, 0.03) 1px,
+                    transparent 1px,
+                    transparent 2px
+                ),
+                repeating-linear-gradient(
+                    90deg,
+                    rgba(139, 69, 19, 0.03),
+                    rgba(139, 69, 19, 0.03) 1px,
+                    transparent 1px,
+                    transparent 2px
+                );
+        }
+        
+        .romantic-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .button-glow {
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
+            transition: all 0.3s ease;
+        }
+        
+        .button-glow:hover {
+            box-shadow: 0 0 30px rgba(102, 126, 234, 0.8);
+            transform: translateY(-2px);
+        }
+
+        canvas {
+            width: 100% !important;
+            height: 100% !important;
+            display: block;
+        }
+
+        .content-wrapper {
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+
+        button {
+            will-change: transform, opacity;
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .smooth-render {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect, useRef, useCallback } = React;
+        
+        function App() {
+            const [currentPage, setCurrentPage] = useState('morning');
+            const [isTransitioning, setIsTransitioning] = useState(false);
+            const mountRef = useRef(null);
+            const sceneRef = useRef(null);
+            const rendererRef = useRef(null);
+            const sunRef = useRef(null);
+            const animationIdRef = useRef(null);
+            
+            const safeTransition = useCallback((newPage) => {
+                if (isTransitioning) return;
+                setIsTransitioning(true);
+                setTimeout(() => {
+                    setCurrentPage(newPage);
+                    setIsTransitioning(false);
+                }, 300);
+            }, [isTransitioning]);
+            
+            useEffect(() => {
+                if (currentPage === 'morning' || currentPage === 'apology') {
+                    initThreeJS();
+                }
+                return () => {
+                    if (animationIdRef.current) {
+                        cancelAnimationFrame(animationIdRef.current);
+                    }
+                    if (rendererRef.current && mountRef.current) {
+                        try {
+                            mountRef.current.removeChild(rendererRef.current.domElement);
+                        } catch (e) {
+                            console.log('Canvas already removed');
+                        }
+                    }
+                };
+            }, [currentPage]);
+            
+            const initThreeJS = () => {
+                if (!mountRef.current) return;
+                
+                const scene = new THREE.Scene();
+                sceneRef.current = scene;
+                
+                const camera = new THREE.PerspectiveCamera(
+                    60,
+                    window.innerWidth / window.innerHeight,
+                    0.1,
+                    1000
+                );
+                camera.position.set(0, 5, 20);
+                camera.lookAt(0, 0, 0);
+                
+                const renderer = new THREE.WebGLRenderer({ 
+                    antialias: false,
+                    alpha: true,
+                    powerPreference: "high-performance"
+                });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                renderer.setClearColor(0x000000, 0);
+                rendererRef.current = renderer;
+                
+                while (mountRef.current.firstChild) {
+                    mountRef.current.removeChild(mountRef.current.firstChild);
+                }
+                mountRef.current.appendChild(renderer.domElement);
+                
+                // Create beautiful gradient sky
+                const skyGeometry = new THREE.SphereGeometry(500, 32, 32);
+                const skyMaterial = new THREE.ShaderMaterial({
+                    uniforms: {
+                        topColor: { value: new THREE.Color(0xFFB6C1) },
+                        middleColor: { value: new THREE.Color(0xFDE68A) },
+                        bottomColor: { value: new THREE.Color(0xFCA5A5) },
+                        offset: { value: 33 },
+                        exponent: { value: 0.6 }
+                    },
+                    vertexShader: `
+                        varying vec3 vWorldPosition;
+                        void main() {
+                            vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+                            vWorldPosition = worldPosition.xyz;
+                            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                        }
+                    `,
+                    fragmentShader: `
+                        uniform vec3 topColor;
+                        uniform vec3 middleColor;
+                        uniform vec3 bottomColor;
+                        uniform float offset;
+                        uniform float exponent;
+                        varying vec3 vWorldPosition;
+                        void main() {
+                            float h = normalize(vWorldPosition + offset).y;
+                            vec3 color = mix(bottomColor, middleColor, smoothstep(0.0, 0.5, h));
+                            color = mix(color, topColor, smoothstep(0.5, 1.0, h));
+                            gl_FragColor = vec4(color, 1.0);
+                        }
+                    `,
+                    side: THREE.BackSide
+                });
+                const sky = new THREE.Mesh(skyGeometry, skyMaterial);
+                scene.add(sky);
+                
+                // Create animated sun
+                const sunGeometry = new THREE.SphereGeometry(4, 32, 32);
+                const sunMaterial = new THREE.MeshBasicMaterial({ 
+                    color: 0xffd700,
+                    emissive: 0xffd700,
+                    emissiveIntensity: 1.2
+                });
+                const sun = new THREE.Mesh(sunGeometry, sunMaterial);
+                sunRef.current = sun;
+                scene.add(sun);
+                
+                // Sun glow effect
+                const glowGeometry = new THREE.SphereGeometry(6, 32, 32);
+                const glowMaterial = new THREE.MeshBasicMaterial({
+                    color: 0xffd700,
+                    transparent: true,
+                    opacity: 0.3
+                });
+                const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+                sun.add(glow);
+                
+                // Add some clouds
+                const cloudGeometry = new THREE.SphereGeometry(3, 16, 16);
+                const cloudMaterial = new THREE.MeshBasicMaterial({ 
+                    color: 0xffffff,
+                    transparent: true,
+                    opacity: 0.6
+                });
+                
+                for (let i = 0; i < 8; i++) {
+                    const cloud = new THREE.Mesh(cloudGeometry, cloudMaterial);
+                    cloud.position.x = (Math.random() - 0.5) * 200;
+                    cloud.position.y = 15 + Math.random() * 10;
+                    cloud.position.z = (Math.random() - 0.5) * 200;
+                    cloud.scale.set(
+                        1 + Math.random() * 2,
+                        0.5 + Math.random() * 0.5,
+                        1 + Math.random() * 2
+                    );
+                    scene.add(cloud);
+                }
+                
+                // Animate sun movement
+                const animate = () => {
+                    animationIdRef.current = requestAnimationFrame(animate);
+                    
+                    if (sunRef.current) {
+                        const time = Date.now() * 0.0003;
+                        sunRef.current.position.x = Math.cos(time) * 30;
+                        sunRef.current.position.y = Math.sin(time) * 15 + 5;
+                        sunRef.current.position.z = -10;
+                    }
+                    
+                    renderer.render(scene, camera);
+                };
+                
+                animate();
+                
+                let resizeTimeout;
+                const handleResize = () => {
+                    clearTimeout(resizeTimeout);
+                    resizeTimeout = setTimeout(() => {
+                        const width = window.innerWidth;
+                        const height = window.innerHeight;
+                        
+                        camera.aspect = width / height;
+                        camera.updateProjectionMatrix();
+                        renderer.setSize(width, height);
+                    }, 250);
+                };
+                
+                window.addEventListener('resize', handleResize);
+                
+                return () => {
+                    window.removeEventListener('resize', handleResize);
+                    clearTimeout(resizeTimeout);
+                };
+            };
+            
+            const MorningPage = () => (
+                <div className="relative w-full h-full overflow-hidden">
+                    <div ref={mountRef} className="absolute inset-0" />
+                    <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
+                        <div className="content-wrapper smooth-render text-center">
+                            <div className="text-reveal">
+                                <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 font-serif drop-shadow-lg">
+                                    Hey there! Good Morning Cantikkk
+                                </h1>
+                                <p className="text-lg md:text-xl text-white opacity-90 drop-shadow">
+                                    The sky is shining just for you
+                                </p>
+                            </div>
+                            <div className="button-reveal mt-8">
+                                <button
+                                    onClick={() => safeTransition('psalm')}
+                                    className="button-glow bg-white text-purple-800 px-6 py-3 md:px-8 md:py-4 rounded-full font-semibold text-base md:text-lg hover:bg-purple-100 transition-all duration-300"
+                                >
+                                    Click me!
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+            
+            const PsalmPage = () => (
+                <div className="min-h-screen paper-texture bg-amber-50 flex flex-col items-center justify-center p-4">
+                    <div className="content-wrapper smooth-render max-w-2xl text-center">
+                        <div className="text-reveal">
+                            <h2 className="text-2xl md:text-4xl font-serif text-amber-900 mb-6">
+                                Psalm 118:24
+                            </h2>
+                            <p className="text-lg md:text-2xl text-amber-800 leading-relaxed italic">
+                                "This is the day that the Lord has made; 
+                                let us rejoice and be glad in it."
+                            </p>
+                        </div>
+                        <div className="button-reveal mt-8">
+                            <button
+                                onClick={() => safeTransition('apology')}
+                                className="button-glow bg-purple-600 text-white px-6 py-3 md:px-8 md:py-4 rounded-full font-semibold text-base md:text-lg hover:bg-purple-700 transition-all duration-300"
+                            >
+                                Click me!
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+            
+            const ApologyPage = () => {
+                const [showBible, setShowBible] = useState(false);
+                const [showQuestion, setShowQuestion] = useState(false);
+                
+                useEffect(() => {
+                    setTimeout(() => setShowBible(true), 2500);
+                    setTimeout(() => setShowQuestion(true), 5000);
+                }, []);
+                
+                return (
+                    <div className="relative w-full h-full overflow-hidden">
+                        <div ref={mountRef} className="absolute inset-0" />
+                        <div className="absolute inset-0 bg-black bg-opacity-20 flex flex-col items-center justify-center p-4">
+                            <div className="content-wrapper smooth-render text-center max-w-xl">
+                                <div className="text-reveal mb-6">
+                                    <h2 className="text-xl md:text-3xl font-bold text-white mb-4 drop-shadow-lg">
+                                        Maafin aku ya soal kemarin, 
+                                        aku percaya kok sama kamu
+                                    </h2>
+                                </div>
+                                
+                                {showBible && (
+                                    <div className="text-reveal mb-6">
+                                        <h3 className="text-lg md:text-2xl font-serif text-white mb-4 drop-shadow">
+                                            Matthew 5:23–24
+                                        </h3>
+                                        <p className="text-sm md:text-lg text-white leading-relaxed drop-shadow">
+                                            "Therefore, if you are offering your gift at the altar 
+                                            and there remember that your brother or sister has something against you, 
+                                            leave your gift there in front of the altar. 
+                                            First go and be reconciled to them; 
+                                            then come and offer your gift."
+                                        </p>
+                                    </div>
+                                )}
+                                
+                                {showQuestion && (
+                                    <div className="text-reveal">
+                                        <h3 className="text-lg md:text-2xl font-bold text-white drop-shadow-lg mb-4">
+                                            mau kan maafin aku?
+                                        </h3>
+                                        <div className="button-reveal">
+                                            <div className="flex gap-3 md:gap-4 justify-center">
+                                                <button
+                                                    onClick={() => safeTransition('yes')}
+                                                    className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 md:px-8 md:py-3 rounded-full font-semibold text-sm md:text-base transition-all duration-300 button-glow"
+                                                >
+                                                    Yes
+                                                </button>
+                                                <button
+                                                    onClick={() => safeTransition('no')}
+                                                    className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 md:px-8 md:py-3 rounded-full font-semibold text-sm md:text-base transition-all duration-300 button-glow"
+                                                >
+                                                    No
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                );
+            };
+            
+            const ResponsePage = ({ type }) => (
+                <div className="min-h-screen romantic-gradient flex flex-col items-center justify-center p-4 text-center">
+                    <div className="content-wrapper smooth-render">
+                        <div className="text-reveal mb-8">
+                            <h1 className="text-2xl md:text-4xl font-bold text-white drop-shadow-lg">
+                                {type === 'yes' ? 'YEAYYYY! I love youuuuu sayangggg' : 
+                                 'Okei! gapapa aku bakal konsisten sampai kamu mau maafin aku kok :D I love youuu sayangg'}
+                            </h1>
+                        </div>
+                        <div className="button-reveal">
+                            <button
+                                onClick={() => safeTransition('final')}
+                                className="bg-white text-purple-800 px-6 py-3 md:px-8 md:py-4 rounded-full font-semibold text-base md:text-lg hover:bg-purple-100 transition-all duration-300 button-glow"
+                            >
+                                Continue
+                            </button>
+                        </div>
+                    </div>
+          </div>
+            );
+            
+            const FinalPage = () => {
+                const [imageLoaded, setImageLoaded] = useState(false);
+                
+                return (
+                    <div className="min-h-screen paper-texture bg-pink-50 flex flex-col items-center justify-center p-4">
+                        <div className="content-wrapper smooth-render text-center max-w-2xl">
+                            <div className="text-reveal">
+                                <h1 className="text-4xl md:text-6xl font-bold text-pink-500 text-center drop-shadow mb-8">
+                                    Aku sayang kamu! Have A Great Day!
+                                </h1>
+                            </div>
+                            
+                            <div className="text-reveal">
+                                <img 
+                                    src="https://via.placeholder.com/250x350/FFB6C1/FFFFFF?text=Your+Photo" 
+                                    alt="Your photo"
+                                    className={`rounded-lg shadow-2xl max-w-full h-auto transition-opacity duration-1000 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+                                    onLoad={() => setImageLoaded(true)}
+                                />
+                            </div>
+                            
+                            <div className="button-reveal mt-8">
+
+                                </div>
+                        </div>
+                    </div>
+                );
+            };
+            
+            const renderPage = () => {
+                switch(currentPage) {
+                    case 'morning': return <MorningPage />;
+                    case 'psalm': return <PsalmPage />;
+                    case 'apology': return <ApologyPage />;
+                    case 'yes': return <ResponsePage type="yes" />;
+                    case 'no': return <ResponsePage type="no" />;
+                    case 'final': return <FinalPage />;
+                    default: return <MorningPage />;
+                }
+            };
+            
+            return renderPage();
+        }
+        
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>

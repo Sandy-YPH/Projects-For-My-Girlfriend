@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Maafin Aku Ya :(</title>
+
+  <!-- Swiper CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #ffe6f0, #e6f7ff);
+      color: #5a5a5a;
+      overflow: hidden;
+      height: 100vh;
+      position: relative;
+    }
+
+    /* Animasi Hati Jatuh */
+    .hearts {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .heart {
+      position: absolute;
+      font-size: 1.2rem;
+      opacity: 0;
+      color: #ff6b9c;
+      animation: fall linear forwards;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    /* Konten Utama */
+    .swiper {
+      width: 100%;
+      height: 100vh;
+      position: relative;
+      z-index: 10;
+    }
+
+    .swiper-slide {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+    }
+
+    h1 {
+      font-family: 'Dancing Script', cursive;
+      font-size: 4rem;
+      margin-bottom: 1.5rem;
+      color: #d32f2f;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    p {
+      font-size: 1.4rem;
+      max-width: 700px;
+      line-height: 1.7;
+      color: #4a4a4a;
+    }
+
+    /* Fade-in saat slide aktif */
+    .swiper-slide-active h1,
+    .swiper-slide-active p {
+      animation: fadeIn 1s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Panduan Geser (Swipe Hint) */
+    .swipe-hint {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #ff6b9c;
+      font-size: 0.9rem;
+      z-index: 20;
+      animation: pulse 2s infinite;
+    }
+
+    .swipe-hint svg {
+      width: 24px;
+      height: 24px;
+      margin-bottom: 6px;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.4; transform: translateX(-50%) translateY(0); }
+      50% { opacity: 1; transform: translateX(-50%) translateY(-8px); }
+    }
+
+    /* Responsif */
+    @media (max-width: 768px) {
+      h1 { font-size: 2.8rem; }
+      p { font-size: 1.2rem; }
+      .swipe-hint { bottom: 20px; font-size: 0.8rem; }
+    }
+
+    @media (max-width: 480px) {
+      h1 { font-size: 2.2rem; }
+      p { font-size: 1rem; padding: 0 15px; }
+      .swipe-hint { bottom: 15px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Animasi Hati -->
+  <div class="hearts" id="hearts"></div>
+
+  <!-- Swiper Slides -->
+  <div class="swiper">
+    <div class="swiper-wrapper">
+
+      <div class="swiper-slide">
+        <h1>Maafin aku ya :(</h1>
+      </div>
+
+      <div class="swiper-slide">
+        <h1>aku janji gaakan ngulangin lagi</h1>
+        <p>Aku janji gaakan ngulangin lagi kesalahan bodoh aku sayang, mau ya maafin aku?</p>
+      </div>
+
+      <div class="swiper-slide">
+        <h1>I love you and I need you :(</h1>
+        <p>Sayang jangan ngacangin aku lama-lama ya, aku butuh kamu, aku cinta kamu, aku nyesel udah buat kamu sedih, mau ya maafin aku?</p>
+      </div>
+
+      <div class="swiper-slide">
+        <h1>I'll try to be better for you :(</h1>
+        <p>Aku janji aku akan menjadi lebih baik untuk kamu, aku gaakan bikin kamu kesel lagi, mau ya maafin aku?</p>
+      </div>
+
+      <div class="swiper-slide">
+        <h1>I realize my mistake :(</h1>
+        <p>Aku minta maaf bukan hanya untuk "minta maaf" aja, aku bener-bener ngerti apa yang aku lakuin nyakitin kamu, dan aku sangat menyesal. Mau ya maafin aku?</p>
+      </div>
+
+      <div class="swiper-slide">
+        <h1>I want to fix my mistake and I won't forget it :(</h1>
+        <p>Aku siap ngebuktiin ke kamu kalau aku bener-bener menyesal dan bukan cuma kata-kata aja. Mau ya maafin aku?</p>
+      </div>
+
+      <div class="swiper-slide">
+        <h1>I miss you :(</h1>
+        <p>Aku kangen kamu, aku kangen chattan sama kamu lebih dari 1-2 kata aja, aku kangen ketawa bareng sama kamu, aku kangen kamu. Mau ya maafin aku?</p>
+      </div>
+
+      <div class="swiper-slide">
+        <h1>I don't want a life without you :(</h1>
+        <p>Aku bisa hidup tanpa banyak hal, tapi gabisa kalau gaada kamu nya.</p>
+      </div>
+
+      <div class="swiper-slide">
+        <h1>please forgive me :(</h1>
+        <p>aku sayang kamu lebih dari apapun di dunia ini, mau ya maafin aku? please?</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Swipe Hint -->
+  <div class="swipe-hint">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 16.5l-5.5-5.5 1.41-1.41L12 14.17l4.09-4.09L17.5 11.5z"/>
+    </svg>
+    Geser ke bawah
+  </div>
+
+  <!-- Swiper JS -->
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+  <script>
+    // Inisialisasi Swiper
+    const swiper = new Swiper('.swiper', {
+      direction: 'vertical',
+      slidesPerView: 1,
+      mousewheel: true,
+      keyboard: true,
+      effect: 'fade',
+      fadeEffect: { crossFade: true },
+      on: {
+        // Sembunyikan panduan setelah user mulai menggeser
+        slideChange: function() {
+          document.querySelector('.swipe-hint').style.display = 'none';
+        }
+      }
+    });
+
+    // Animasi Hati Jatuh
+    function createHeart() {
+      const heart = document.createElement('div');
+      heart.innerHTML = '❤';
+      heart.classList.add('heart');
+
+      // Posisi acak horizontal
+      const leftPos = Math.random() * 100;
+      heart.style.left = `${leftPos}vw`;
+
+      // Durasi jatuh acak (5–10 detik)
+      const duration = 5 + Math.random() * 5;
+      heart.style.animationDuration = `${duration}s`;
+
+      // Ukuran hati acak
+      const size = 0.6 + Math.random() * 0.8;
+      heart.style.fontSize = `${size}rem`;
+
+      // Tambahkan ke layar
+      document.getElementById('hearts').appendChild(heart);
+
+      // Hapus elemen setelah animasi selesai agar tidak menumpuk
+      setTimeout(() => {
+        heart.remove();
+      }, duration * 1000);
+    }
+
+    // Buat hati setiap 300–600ms
+    setInterval(createHeart, 400);
+  </script>
+
+</body>
+</html>
+
